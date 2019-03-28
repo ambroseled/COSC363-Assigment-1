@@ -13,6 +13,12 @@ GL/freeglut.h
 -
 cmath
 -
+fstream
+-
+climits
+-
+math.h
+-
 loadTGA.h
 /home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1/loadTGA.h
 

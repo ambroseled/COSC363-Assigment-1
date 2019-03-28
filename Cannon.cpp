@@ -8,11 +8,11 @@
 //  Use left/right arrow keys to rotate the scene
 //  Use up/down arrow keys to move camera up/down
 //  ========================================================================
- 
+
 #include <iostream>
 #include <fstream>
 #include <climits>
-#include <math.h> 
+#include <math.h>
 #include <GL/freeglut.h>
 using namespace std;
 
@@ -27,7 +27,7 @@ float ball_pos[3] = {38.88, 64, 0};
 
 
 //-- Loads mesh data in OFF format    -------------------------------------
-void loadMeshFile(const char* fname)  
+void loadMeshFile(const char* fname)
 {
 	ifstream fp_in;
 	int num, ne;
@@ -50,10 +50,10 @@ void loadMeshFile(const char* fname)
     t2 = new int[ntri];
     t3 = new int[ntri];
 
-	for(int i=0; i < nvrt; i++)                         //read vertex list 
+	for(int i=0; i < nvrt; i++)                         //read vertex list
 		fp_in >> x[i] >> y[i] >> z[i];
 
-	for(int i=0; i < ntri; i++)                         //read polygon list 
+	for(int i=0; i < ntri; i++)                         //read polygon list
 	{
 		fp_in >> num >> t1[i] >> t2[i] >> t3[i];
 		if(num != 3)
@@ -97,6 +97,190 @@ void drawCannon()
 	glEnd();
 }
 
+
+void drawCannonBody()
+{
+    //--start here
+    glPushMatrix();
+    glTranslatef(-10.0, 5.0, 17.0);
+    glScalef(80.0, 10.0, 6.0);
+    glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(-20.0, 25.0, 17.0);
+    glScalef(40.0, 30.0, 6.0);
+    glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(-10.0, 5.0, -17.0);
+    glScalef(80.0, 10.0, 6.0);
+    glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(-20.0, 25.0, -17.0);
+    glScalef(40.0, 30.0, 6.0);
+    glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(-20, 30, 0); //Pivot point coordinates
+    glRotatef(30, 0, 0, 1); //Rotation
+    glTranslatef(20, -30, 0);
+    drawCannon();
+    glPopMatrix();
+
+    glPushMatrix();
+    glColor3f(1, 1, 0);
+    glTranslatef(ball_pos[0], ball_pos[1], ball_pos[2]);
+    glutSolidSphere(5, 36, 18);
+    glPopMatrix();
+}
+
+
+
+
+void drawCastle()
+{
+    GLUquadric *q;
+    q = gluNewQuadric();
+
+
+    glDisable(GL_TEXTURE_2D);
+    // Front wall
+	glPushMatrix();
+        glPushMatrix();
+            glColor3f(0, 0, 1);
+            glTranslatef(0., 43., -10.);
+            glScalef(15.0, 3, 1);
+            glutSolidCube(5);
+        glPopMatrix();
+
+        glPushMatrix();
+            glColor3f(0, 0, 1);
+            glTranslatef(25., 25., -10.);
+            glScalef(3.0, 10, 1);
+            glutSolidCube(5);
+        glPopMatrix();
+
+        glPushMatrix();
+            glColor3f(0, 0, 1);
+            glTranslatef(-25., 25., -10.);
+            glScalef(3.0, 10, 1);
+            glutSolidCube(5);
+        glPopMatrix();
+
+	glPopMatrix();
+
+    // Back wall
+	glPushMatrix();
+		glColor3f(0, 0, 1);
+		glTranslatef(0., 25., 60.);
+		glScalef(15.0, 10, 1);
+    	glutSolidCube(5);
+	glPopMatrix();
+
+    // left wall
+	glPushMatrix();
+		glColor3f(0, 0, 1);
+		glTranslatef(35., 25., 25.);
+        glRotatef(90, 0., 1., 0.);
+		glScalef(15.0, 10, 1);
+    	glutSolidCube(5);
+	glPopMatrix();
+
+    // right wall
+	glPushMatrix();
+        glColor3f(0, 0, 1);
+        glTranslatef(-35., 25., 25.);
+        glRotatef(90, 0., 1., 0.);
+        glScalef(15.0, 10, 1);
+        glutSolidCube(5);
+	glPopMatrix();
+
+    // tower 1
+    glPushMatrix();
+        glPushMatrix();
+            glTranslatef(35, 60, -12);
+            glRotatef(90, 0, 1, 0);
+            glScalef(0.15, 0.15, 0.15);
+            drawCannonBody();
+        glPopMatrix();
+
+       glRotatef(90, 1, 0, 0);
+       glTranslatef(-35, -10, -60);
+       gluCylinder(q, 5, 5, 60, 20, 3);
+       gluQuadricDrawStyle(q, GLU_FILL);
+       glRotatef(90, 0, 0, 1);
+       glTranslatef(20, 10, -20);
+   glPopMatrix();
+
+
+   // tower 1
+   glPushMatrix();
+       glPushMatrix();
+           glTranslatef(-35, 60, -12);
+           glRotatef(90, 0, 1, 0);
+           glScalef(0.15, 0.15, 0.15);
+           drawCannonBody();
+       glPopMatrix();
+
+      glRotatef(90, 1, 0, 0);
+      glTranslatef(35, -10, -60);
+      gluCylinder(q, 5, 5, 60, 20, 3);
+      gluQuadricDrawStyle(q, GLU_FILL);
+      glRotatef(90, 0, 0, 1);
+      glTranslatef(20, 10, -20);
+  glPopMatrix();
+
+
+  // tower 1
+  glPushMatrix();
+     glRotatef(90, 1, 0, 0);
+     glTranslatef(-35, 60, -60);
+     gluCylinder(q, 5, 5, 60, 20, 3);
+     gluQuadricDrawStyle(q, GLU_FILL);
+     glRotatef(90, 0, 0, 1);
+     glTranslatef(20, 10, -20);
+ glPopMatrix();
+
+
+
+ // tower 1
+ glPushMatrix();
+    glRotatef(90, 1, 0, 0);
+    glTranslatef(35, 60, -60);
+    gluCylinder(q, 5, 5, 60, 20, 3);
+    gluQuadricDrawStyle(q, GLU_FILL);
+    glRotatef(90, 0, 0, 1);
+    glTranslatef(20, 10, -20);
+glPopMatrix();
+
+
+glPushMatrix();
+    glTranslatef(25, 0, -35);
+    glRotatef(90, 0, 1, 0);
+    glScalef(0.25, 0.25, 0.25);
+    drawCannonBody();
+glPopMatrix();
+
+
+glPushMatrix();
+    glTranslatef(-25, 0, -35);
+    glRotatef(90, 0, 1, 0);
+    glScalef(0.25, 0.25, 0.25);
+    drawCannonBody();
+glPopMatrix();
+
+
+    glEnable(GL_TEXTURE_2D);
+}
+
+
+
+
 //----------draw a floor plane-------------------
 void drawFloor()
 {
@@ -123,12 +307,12 @@ void drawFloor()
 //--Display: ----------------------------------------------------------------------
 //--This is the main display module containing function calls for generating
 //--the scene.
-void display()  
+void display()
 {
 	float lpos[4] = {100., 100., 100., 1.0};  //light's position
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);    //GL_LINE = Wireframe;   GL_FILL = Solid
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	gluLookAt(0, cam_hgt, 200, 0, 0, 0, 0, 1, 0);
@@ -138,44 +322,9 @@ void display()
 
 	drawFloor();
 
+    //drawCannonBody();
 
-    //--start here
-    glPushMatrix();
-    glTranslatef(-10.0, 5.0, 17.0);
-    glScalef(80.0, 10.0, 6.0);
-    glutSolidCube(1);
-    glPopMatrix();
-\
-    glPushMatrix();
-    glTranslatef(-20.0, 25.0, 17.0);
-    glScalef(40.0, 30.0, 6.0);
-    glutSolidCube(1);
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(-10.0, 5.0, -17.0);
-    glScalef(80.0, 10.0, 6.0);
-    glutSolidCube(1);
-    glPopMatrix();
-\
-    glPushMatrix();
-    glTranslatef(-20.0, 25.0, -17.0);
-    glScalef(40.0, 30.0, 6.0);
-    glutSolidCube(1);
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(-20, 30, 0); //Pivot point coordinates
-    glRotatef(30, 0, 0, 1); //Rotation
-    glTranslatef(20, -30, 0);
-    drawCannon();
-    glPopMatrix();
-
-    glPushMatrix();
-    glColor3f(1, 1, 0);
-    glTranslatef(ball_pos[0], ball_pos[1], ball_pos[2]);
-    glutSolidSphere(5, 36, 18);
-    glPopMatrix();
+    drawCastle();
 
 	glFlush();
 }
@@ -194,7 +343,7 @@ void initialize()
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(60, 1, 50, 1000);  //The camera view volume  
+	gluPerspective(60, 1, 50, 1000);  //The camera view volume
 }
 
 //------------ Special key event callback ---------------------------------
@@ -209,7 +358,7 @@ void special(int key, int x, int y)
 	if(cam_hgt > 200) cam_hgt = 200;
 	else if(cam_hgt < 10) cam_hgt = 10;
 
-    
+
 	glutPostRedisplay();
 }
 
@@ -237,13 +386,13 @@ int main(int argc, char** argv)
 {
    glutInit(&argc, argv);
    glutInitDisplayMode (GLUT_SINGLE | GLUT_DEPTH);
-   glutInitWindowSize (600, 600); 
+   glutInitWindowSize (600, 600);
    glutInitWindowPosition (10, 10);
    glutCreateWindow ("Cannon");
    initialize();
 
    glutDisplayFunc(display);
-   glutSpecialFunc(special); 
+   glutSpecialFunc(special);
    glutKeyboardFunc(fire);
    glutMainLoop();
    return 0;

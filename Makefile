@@ -123,6 +123,46 @@ Skybox.out/fast:
 	$(MAKE) -f CMakeFiles/Skybox.out.dir/build.make CMakeFiles/Skybox.out.dir/build
 .PHONY : Skybox.out/fast
 
+#=============================================================================
+# Target rules for targets named Cannon.out
+
+# Build rule for target.
+Cannon.out: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 Cannon.out
+.PHONY : Cannon.out
+
+# fast build rule for target.
+Cannon.out/fast:
+	$(MAKE) -f CMakeFiles/Cannon.out.dir/build.make CMakeFiles/Cannon.out.dir/build
+.PHONY : Cannon.out/fast
+
+Cannon.o: Cannon.cpp.o
+
+.PHONY : Cannon.o
+
+# target to build an object file
+Cannon.cpp.o:
+	$(MAKE) -f CMakeFiles/Cannon.out.dir/build.make CMakeFiles/Cannon.out.dir/Cannon.cpp.o
+.PHONY : Cannon.cpp.o
+
+Cannon.i: Cannon.cpp.i
+
+.PHONY : Cannon.i
+
+# target to preprocess a source file
+Cannon.cpp.i:
+	$(MAKE) -f CMakeFiles/Cannon.out.dir/build.make CMakeFiles/Cannon.out.dir/Cannon.cpp.i
+.PHONY : Cannon.cpp.i
+
+Cannon.s: Cannon.cpp.s
+
+.PHONY : Cannon.s
+
+# target to generate assembly for a file
+Cannon.cpp.s:
+	$(MAKE) -f CMakeFiles/Cannon.out.dir/build.make CMakeFiles/Cannon.out.dir/Cannon.cpp.s
+.PHONY : Cannon.cpp.s
+
 Skybox.o: Skybox.cpp.o
 
 .PHONY : Skybox.o
@@ -157,8 +197,12 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... Skybox.out"
 	@echo "... edit_cache"
+	@echo "... Skybox.out"
+	@echo "... Cannon.out"
+	@echo "... Cannon.o"
+	@echo "... Cannon.i"
+	@echo "... Cannon.s"
 	@echo "... Skybox.o"
 	@echo "... Skybox.i"
 	@echo "... Skybox.s"
