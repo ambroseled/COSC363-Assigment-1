@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1/Skybox.cpp
+iostream
+-
+GL/freeglut.h
+-
+cmath
+-
+loadTGA.h
+/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1/loadTGA.h
+
+/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1/loadTGA.h
+iostream
+-
+fstream
+-
+GL/freeglut.h
+-
+

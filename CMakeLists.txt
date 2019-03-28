@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(assignment1)
+project(assigment)
 
 
 add_executable(Skybox.out Skybox.cpp)
