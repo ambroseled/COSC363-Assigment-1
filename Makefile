@@ -124,44 +124,44 @@ Skybox.out/fast:
 .PHONY : Skybox.out/fast
 
 #=============================================================================
-# Target rules for targets named Cannon.out
+# Target rules for targets named Castle.out
 
 # Build rule for target.
-Cannon.out: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 Cannon.out
-.PHONY : Cannon.out
+Castle.out: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 Castle.out
+.PHONY : Castle.out
 
 # fast build rule for target.
-Cannon.out/fast:
-	$(MAKE) -f CMakeFiles/Cannon.out.dir/build.make CMakeFiles/Cannon.out.dir/build
-.PHONY : Cannon.out/fast
+Castle.out/fast:
+	$(MAKE) -f CMakeFiles/Castle.out.dir/build.make CMakeFiles/Castle.out.dir/build
+.PHONY : Castle.out/fast
 
-Cannon.o: Cannon.cpp.o
+Castle.o: Castle.cpp.o
 
-.PHONY : Cannon.o
+.PHONY : Castle.o
 
 # target to build an object file
-Cannon.cpp.o:
-	$(MAKE) -f CMakeFiles/Cannon.out.dir/build.make CMakeFiles/Cannon.out.dir/Cannon.cpp.o
-.PHONY : Cannon.cpp.o
+Castle.cpp.o:
+	$(MAKE) -f CMakeFiles/Castle.out.dir/build.make CMakeFiles/Castle.out.dir/Castle.cpp.o
+.PHONY : Castle.cpp.o
 
-Cannon.i: Cannon.cpp.i
+Castle.i: Castle.cpp.i
 
-.PHONY : Cannon.i
+.PHONY : Castle.i
 
 # target to preprocess a source file
-Cannon.cpp.i:
-	$(MAKE) -f CMakeFiles/Cannon.out.dir/build.make CMakeFiles/Cannon.out.dir/Cannon.cpp.i
-.PHONY : Cannon.cpp.i
+Castle.cpp.i:
+	$(MAKE) -f CMakeFiles/Castle.out.dir/build.make CMakeFiles/Castle.out.dir/Castle.cpp.i
+.PHONY : Castle.cpp.i
 
-Cannon.s: Cannon.cpp.s
+Castle.s: Castle.cpp.s
 
-.PHONY : Cannon.s
+.PHONY : Castle.s
 
 # target to generate assembly for a file
-Cannon.cpp.s:
-	$(MAKE) -f CMakeFiles/Cannon.out.dir/build.make CMakeFiles/Cannon.out.dir/Cannon.cpp.s
-.PHONY : Cannon.cpp.s
+Castle.cpp.s:
+	$(MAKE) -f CMakeFiles/Castle.out.dir/build.make CMakeFiles/Castle.out.dir/Castle.cpp.s
+.PHONY : Castle.cpp.s
 
 Skybox.o: Skybox.cpp.o
 
@@ -199,10 +199,10 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... Skybox.out"
-	@echo "... Cannon.out"
-	@echo "... Cannon.o"
-	@echo "... Cannon.i"
-	@echo "... Cannon.s"
+	@echo "... Castle.out"
+	@echo "... Castle.o"
+	@echo "... Castle.i"
+	@echo "... Castle.s"
 	@echo "... Skybox.o"
 	@echo "... Skybox.i"
 	@echo "... Skybox.s"

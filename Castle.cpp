@@ -14,6 +14,7 @@
 #include <climits>
 #include <math.h>
 #include <GL/freeglut.h>
+#include "loadBMP.h"
 using namespace std;
 
 //--Globals ---------------------------------------------------------------
@@ -22,8 +23,25 @@ int *t1, *t2, *t3; //triangles
 int nvrt, ntri;    //total number of vertices and triangles
 float angle = -10.0;  //Rotation angle for viewing
 float cam_hgt = 100;
-
+float cannonAngle = 45;
 float ball_pos[3] = {38.88, 64, 0};
+GLuint texId[1];
+float theta = 20;
+float shipHeight = 0;
+
+
+void loadGLTextures()				// Load bitmaps And Convert To Textures
+{
+	glGenTextures(1, texId); 		// Create texture ids
+	// *** left ***
+	glBindTexture(GL_TEXTURE_2D, texId[0]);
+	loadBMP("brickTexture.bmp");
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);	//Set texture parameters
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+
+
+	glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
+}
 
 
 //-- Loads mesh data in OFF format    -------------------------------------
@@ -67,6 +85,15 @@ void loadMeshFile(const char* fname)
 	cout << " File successfully read." << endl;
 }
 
+
+void drawShip()
+{
+	glPushMatrix();
+		glTranslatef(20, shipHeight, 10);
+		glutSolidCube(20);
+	glPopMatrix();
+}
+
 //--Function to compute the normal vector of a triangle with index tindx ----------
 void normal(int tindx)
 {
@@ -78,6 +105,63 @@ void normal(int tindx)
 	ny = z1*(x2-x3) + z2*(x3-x1) + z3*(x1-x2);
 	nz = x1*(y2-y3) + x2*(y3-y1) + x3*(y1-y2);
 	glNormal3f(nx, ny, nz);
+}
+
+//--Draws a character model constructed using GLUT objects ------------------
+void drawModel()
+{
+    glColor3ub(-theta, theta + 69, theta);		//Head
+	glPushMatrix();
+	  glTranslatef(0, 7.7, 0);
+	  glutSolidCube(1.4);
+	glPopMatrix();
+
+    glColor3ub(theta * 324, theta + 69, -theta);			//Torso
+	glPushMatrix();
+	  glTranslatef(0, 5.5, 0);
+	  glScalef(3, 3, 1.4);
+	  glutSolidCube(1);
+	glPopMatrix();
+
+    glColor3ub(-theta, theta - 69, -theta);			//Right leg
+	glPushMatrix();
+      glTranslatef(-0.8, 4, 0);
+      glRotatef(-theta, 1, 0, 0);
+      glTranslatef(0.8, -4, 0);
+	  glTranslatef(-0.8, 2.2, 0);
+	  glScalef(1, 4.4, 1);
+	  glutSolidCube(1);
+	glPopMatrix();
+
+    glColor3ub(theta + 167, theta + 69, theta);			//Left leg
+	glPushMatrix();
+      glTranslatef(0.8, 4, 0);
+      glRotatef(theta, 1, 0, 0);
+      glTranslatef(-0.8, -4, 0);
+      glTranslatef(0.8, 2.2, 0);
+	  glScalef(1, 4.4, 1);
+	  glutSolidCube(1);
+	glPopMatrix();
+
+    glColor3ub(-theta, theta + 69, -theta);			//Right arm
+	glPushMatrix();
+      glTranslatef(-2, 6.5, 0);
+      glRotatef(theta, 1, 0, 0);
+      glTranslatef(2, -6.5, 0);
+	  glTranslatef(-2, 5, 0);
+	  glScalef(1, 4, 1);
+	  glutSolidCube(1);
+	glPopMatrix();
+
+    glColor3ub(-theta * 8, theta + 69, theta * 17);			//Left arm
+	glPushMatrix();
+      glTranslatef(2, 6.5, 0);
+      glRotatef(-theta, 1, 0, 0);
+      glTranslatef(-2, -6.5, 0);
+	  glTranslatef(2, 5, 0);
+	  glScalef(1, 4, 1);
+	  glutSolidCube(1);
+	glPopMatrix();
 }
 
 //--------draws the mesh model of the cannon----------------------------
@@ -95,6 +179,46 @@ void drawCannon()
 		   glVertex3d(x[t3[tindx]], y[t3[tindx]], z[t3[tindx]]);
 		}
 	glEnd();
+}
+
+
+void drawWall(float length, float height, float width)
+{
+	glEnable(GL_TEXTURE_2D);
+	glBegin(GL_QUADS);
+
+
+    // front
+    glTexCoord2f(0., 0.); glVertex3f(0.0f, 0.0f, 0.0f);
+    glTexCoord2f(2., 0.); glVertex3f(length, 0.0f, 0.0f);
+    glTexCoord2f(2., 2.); glVertex3f(length, height, 0.0f);
+    glTexCoord2f(0., 2.); glVertex3f(0.0f, height, 0.0f);
+    // back
+    glTexCoord2f(0., 0.); glVertex3f(0.0f, 0.0f, -width);
+    glTexCoord2f(2., 0.); glVertex3f(length, 0.0f, -width);
+    glTexCoord2f(2., 2.); glVertex3f(length, height, -width);
+    glTexCoord2f(0., 2.); glVertex3f(0.0f, height, -width);
+    // right
+    glTexCoord2f(0., 0.); glVertex3f(length, 0.0f, 0.0f);
+    glTexCoord2f(2., 0.); glVertex3f(length, 0.0f, -width);
+    glTexCoord2f(2., 2.); glVertex3f(length, height, -width);
+    glTexCoord2f(0., 2.); glVertex3f(length, height, 0.0f);
+    // left
+    glTexCoord2f(0., 0.); glVertex3f(0.0f, 0.0f, 0.0f);
+    glTexCoord2f(2., 0.); glVertex3f(0.0f, 0.0f, -width);
+    glTexCoord2f(2., 2.); glVertex3f(0.0f, height, -width);
+    glTexCoord2f(0., 2.); glVertex3f(0.0f, height, 0.0f);
+    // top
+    glTexCoord2f(0., 0.); glVertex3f(0.0f, height, 0.0f);
+    glTexCoord2f(2., 0.); glVertex3f(length, height, 0.0f);
+    glTexCoord2f(2., 2.); glVertex3f(length, height, -width);
+    glTexCoord2f(0., 2.); glVertex3f(0.0f, height, -width);
+    // bottom
+    glTexCoord2f(0., 0.); glVertex3f(0.0f, 0.0f, 0.0f);
+    glTexCoord2f(2., 0.); glVertex3f(length, 0.0f, 0.0f);
+    glTexCoord2f(2., 2.); glVertex3f(length, 0.0f, -width);
+    glTexCoord2f(0., 2.); glVertex3f(0.0f, 0.0f, -width);
+glEnd();
 }
 
 
@@ -127,7 +251,7 @@ void drawCannonBody()
 
     glPushMatrix();
     glTranslatef(-20, 30, 0); //Pivot point coordinates
-    glRotatef(30, 0, 0, 1); //Rotation
+    glRotatef(cannonAngle, 0, 0, 1); //Rotation
     glTranslatef(20, -30, 0);
     drawCannon();
     glPopMatrix();
@@ -142,6 +266,172 @@ void drawCannonBody()
 
 
 
+void drawTower(int n, float x, float y) {
+    /*
+        Function drw_polygon:
+        Arguments:
+            n - number of sides
+            arg - starting angle (not so important at all)
+            mult - multiplying sides to incrase their length
+            v - cylinder height
+    */
+    // Cylinder Bottom
+    glBegin(GL_POLYGON);
+        glColor4f(1.0, 0.0, 0.0, 1.0);
+        for(int i = 0; i <= (360); i += (360 / n)) {
+            float a = i * M_PI / 180; // degrees to radians
+            glVertex3f(x * cos(a), x * sin(a), 0.0);
+        }
+    glEnd();
+
+    // Cylinder Top
+    glBegin(GL_POLYGON);
+        glColor4f(0.0, 0.0, 1.0, 1.0);
+        for(int i = 0; i <= (360); i += (360 / n)) {
+            float a = i * M_PI / 180; // degrees to radians
+            glVertex3f(x * cos(a), x * sin(a), y);
+        }
+    glEnd();
+
+    // Cylinder "Cover"
+    glBegin(GL_QUAD_STRIP);
+        glColor4f(1.0, 1.0, 0.0, 1.0);
+        for(int i = 0; i < 480; i += (360 / n)) {
+            float a = i * M_PI / 180; // degrees to radians
+            glVertex3f(x * cos(a), x * sin(a), 0.0);
+            glVertex3f(x * cos(a), x * sin(a), y);
+        }
+    glEnd();
+}
+
+
+void newCastle()
+{
+
+	glDisable(GL_TEXTURE_2D);
+
+
+	// Front wall
+	glPushMatrix();
+		glColor3f(0, 0, 1);
+		glTranslatef(-35., 0., -50.);
+		drawWall(20, 40, 5);
+	glPopMatrix();
+
+	glPushMatrix();
+		glColor3f(0, 0, 1);
+		glTranslatef(20., 0., -50.);
+		drawWall(20, 40, 5);
+	glPopMatrix();
+
+
+	glPushMatrix();
+		glColor3f(0, 0, 1);
+		glTranslatef(-15., 30., -50.);
+		drawWall(35, 10, 5);
+	glPopMatrix();
+
+
+
+	// Back wall
+	glPushMatrix();
+		glColor3f(0, 0, 1);
+		glTranslatef(-35., 0., 25.);
+		drawWall(80, 40, 5);
+	glPopMatrix();
+
+	// left wall
+	glPushMatrix();
+		glColor3f(0, 0, 1);
+		glTranslatef(45., 0., 25.);
+		glRotatef(90, 0., 1., 0.);
+		drawWall(80, 40, 5);
+	glPopMatrix();
+
+	// right wall
+	glPushMatrix();
+		glColor3f(0, 0, 1);
+		glTranslatef(-35., 0., 25.);
+		glRotatef(90, 0., 1., 0.);
+		drawWall(80, 40, 5);
+	glPopMatrix();
+
+	glDisable(GL_TEXTURE_2D);
+	// Back Right Tower
+	glPushMatrix();
+		//glRotatef(90, 1, 0, 0);
+		glTranslatef(-37, 50, 22);
+		glRotatef(90, 1, 0, 0);
+		drawTower(30, 5, 50);
+		glPushMatrix();
+			glRotatef(180, 0, 1, 0);
+			glutSolidCone(5, 10, 30, 10);
+		glPopMatrix();
+	glPopMatrix();
+
+	// Back Left Tower
+	glPushMatrix();
+		//glRotatef(90, 1, 0, 0);
+		glTranslatef(42, 50, 22);
+		glRotatef(90, 1, 0, 0);
+		drawTower(30, 5, 50);
+		glPushMatrix();
+			glRotatef(180, 0, 1, 0);
+			glutSolidCone(5, 10, 30, 10);
+		glPopMatrix();
+	glPopMatrix();
+
+	// Front Right Tower
+	glPushMatrix();
+		//glRotatef(90, 1, 0, 0);
+		glTranslatef(-37, 50, -52);
+		glRotatef(90, 1, 0, 0);
+		drawTower(30, 5, 50);
+		glPushMatrix();
+			glRotatef(180, 0, 1, 0);
+			glutSolidCone(5, 10, 30, 10);
+		glPopMatrix();
+	glPopMatrix();
+
+	// Front Left Tower
+	glPushMatrix();
+		//glRotatef(90, 1, 0, 0);
+		glTranslatef(42, 50, -52);
+		glRotatef(90, 1, 0, 0);
+		drawTower(30, 5, 50);
+		glPushMatrix();
+			glRotatef(180, 0, 1, 0);
+			glutSolidCone(5, 10, 30, 10);
+		glPopMatrix();
+	glPopMatrix();
+
+
+	glPushMatrix();
+		glTranslatef(25, 0, -70);
+		glRotatef(90, 0, 1, 0);
+		glScalef(0.25, 0.25, 0.25);
+		glPushMatrix();
+			glScalef(0.75, 0.75, 0.75);
+			drawCannonBody();
+		glPopMatrix();
+	glPopMatrix();
+
+
+	glPushMatrix();
+		glTranslatef(-25, 0, -70);
+		glRotatef(90, 0, 1, 0);
+		glScalef(0.25, 0.25, 0.25);
+		glPushMatrix();
+			glScalef(0.75, 0.75, 0.75);
+			drawCannonBody();
+		glPopMatrix();
+	glPopMatrix();
+	glEnable(GL_TEXTURE_2D);
+}
+
+
+
+// Old castledrawModel()
 void drawCastle()
 {
     GLUquadric *q;
@@ -149,6 +439,8 @@ void drawCastle()
 
 
     glDisable(GL_TEXTURE_2D);
+
+
     // Front wall
 	glPushMatrix();
         glPushMatrix();
@@ -320,18 +612,29 @@ void display()
 
     glRotatef(angle, 0.0, 1.0, 0.0);		//rotate the whole scene
 
+	glDisable(GL_TEXTURE_2D);
 	drawFloor();
+	glEnable(GL_TEXTURE_2D);
 
     //drawCannonBody();
+	glPushMatrix();
+		glScalef(1.5, 1.5, 1.5);
+    	newCastle();
+	glPopMatrix();
 
-    drawCastle();
+	glPushMatrix();
+		glScalef(3, 3, 3);
+    	drawModel();
+	glPopMatrix();
 
+	drawShip();
 	glFlush();
 }
 
 //------- Initialize OpenGL parameters -----------------------------------
 void initialize()
 {
+	loadGLTextures();
     loadMeshFile("Cannon.off");				//Specify mesh file name here
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);	//Background colour
 
@@ -339,21 +642,22 @@ void initialize()
 	glEnable(GL_LIGHT0);
  	glEnable(GL_COLOR_MATERIAL);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_NORMALIZE);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(60, 1, 50, 1000);  //The camera view volume
+	gluPerspective(100, 1, 50, 1000);  //The camera view volume
 }
 
 //------------ Special key event callback ---------------------------------
 // To enable the use of left and right arrow keys to rotate the scene
 void special(int key, int x, int y)
 {
-    if(key == GLUT_KEY_LEFT) angle--;
-    else if(key == GLUT_KEY_RIGHT) angle++;
-	else if(key == GLUT_KEY_UP) cam_hgt++;
-	else if(key == GLUT_KEY_DOWN) cam_hgt--;
+    if(key == GLUT_KEY_LEFT) angle -= 5;
+    else if(key == GLUT_KEY_RIGHT) angle += 5;
+	else if(key == GLUT_KEY_UP) cam_hgt += 5;
+	else if(key == GLUT_KEY_DOWN) cam_hgt -= 5;
 
 	if(cam_hgt > 200) cam_hgt = 200;
 	else if(cam_hgt < 10) cam_hgt = 10;
@@ -362,22 +666,19 @@ void special(int key, int x, int y)
 	glutPostRedisplay();
 }
 
-void fire_1(int value) {
+void moveCannon(int value) {
 
-    ball_pos[0] += 5;
+
+	if (value == 1) {
+		cannonAngle += 0.4;
+		if (cannonAngle >= 65) value = 0;
+	} else {
+		cannonAngle -= 0.4;
+		if (cannonAngle <= 5) value = 1;
+	}
     glutPostRedisplay();
-    glutTimerFunc(50, fire_1, 1);
+    glutTimerFunc(50, moveCannon, value);
 }
-
-void fire(unsigned char key_t, int x, int y)
-{
-    if (key_t == 32) {
-        ball_pos[0] += 5;
-    }
-
-    glutTimerFunc(50, fire_1, 1);
-}
-
 
 
 
@@ -393,7 +694,7 @@ int main(int argc, char** argv)
 
    glutDisplayFunc(display);
    glutSpecialFunc(special);
-   glutKeyboardFunc(fire);
+   glutTimerFunc(50, moveCannon, 1);
    glutMainLoop();
    return 0;
 }

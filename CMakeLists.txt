@@ -4,7 +4,7 @@ project(assigment)
 
 
 add_executable(Skybox.out Skybox.cpp)
-add_executable(Cannon.out Cannon.cpp)
+add_executable(Castle.out Castle.cpp)
 
 
 find_package(OpenGL REQUIRED)
@@ -13,5 +13,4 @@ include_directories( ${OPENGL_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIRS} )
 
 
 target_link_libraries( Skybox.out ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} )
-target_link_libraries( Cannon.out ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} )
-
+target_link_libraries( Castle.out ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} )

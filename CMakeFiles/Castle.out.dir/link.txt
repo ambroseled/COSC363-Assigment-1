@@ -1,0 +1,1 @@
+/usr/bin/c++    -rdynamic CMakeFiles/Castle.out.dir/Castle.cpp.o  -o Castle.out -lGL -lGLU -lglut -lXmu -lXi 
