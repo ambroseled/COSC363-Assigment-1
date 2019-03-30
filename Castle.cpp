@@ -21,18 +21,19 @@ using namespace std;
 float *x, *y, *z;  //vertex coordinate arrays
 int *t1, *t2, *t3; //triangles
 int nvrt, ntri;    //total number of vertices and triangles
-float angle = -10.0;  //Rotation angle for viewing
-float cam_hgt = 100;
+float angle=0, look_x, look_z=-1., eye_x, eye_z;  //Camera parameters
 float cannonAngle = 45;
 float ball_pos[3] = {38.88, 64, 0};
-GLuint texId[2];
+GLuint texId[5];
 float theta = 20;
 float shipHeight = 0;
+float shipChange = 0;
+bool shipLaunched = false;
 
 
 void loadGLTextures()				// Load bitmaps And Convert To Textures
 {
-	glGenTextures(2, texId); 		// Create texture ids
+	glGenTextures(4, texId); 		// Create texture ids
 	// *** left ***
 	glBindTexture(GL_TEXTURE_2D, texId[0]);
 	loadBMP("brickTexture.bmp");
@@ -48,6 +49,17 @@ void loadGLTextures()				// Load bitmaps And Convert To Textures
 
 	glBindTexture(GL_TEXTURE_2D, texId[2]);
 	loadBMP("metalTexture2.bmp");
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);	//Set texture parameters
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+
+
+	glBindTexture(GL_TEXTURE_2D, texId[3]);
+	loadBMP("redPaint.bmp");
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);	//Set texture parameters
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+
+	glBindTexture(GL_TEXTURE_2D, texId[4]);
+	loadBMP("paintedLines.bmp");
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);	//Set texture parameters
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
@@ -111,63 +123,6 @@ void normal(int tindx)
 	glNormal3f(nx, ny, nz);
 }
 
-//--Draws a character model constructed using GLUT objects ------------------
-void drawModel()
-{
-    glColor3ub(-theta, theta + 69, theta);		//Head
-	glPushMatrix();
-	  glTranslatef(0, 7.7, 0);
-	  glutSolidCube(1.4);
-	glPopMatrix();
-
-    glColor3ub(theta * 324, theta + 69, -theta);			//Torso
-	glPushMatrix();
-	  glTranslatef(0, 5.5, 0);
-	  glScalef(3, 3, 1.4);
-	  glutSolidCube(1);
-	glPopMatrix();
-
-    glColor3ub(-theta, theta - 69, -theta);			//Right leg
-	glPushMatrix();
-      glTranslatef(-0.8, 4, 0);
-      glRotatef(-theta, 1, 0, 0);
-      glTranslatef(0.8, -4, 0);
-	  glTranslatef(-0.8, 2.2, 0);
-	  glScalef(1, 4.4, 1);
-	  glutSolidCube(1);
-	glPopMatrix();
-
-    glColor3ub(theta + 167, theta + 69, theta);			//Left leg
-	glPushMatrix();
-      glTranslatef(0.8, 4, 0);
-      glRotatef(theta, 1, 0, 0);
-      glTranslatef(-0.8, -4, 0);
-      glTranslatef(0.8, 2.2, 0);
-	  glScalef(1, 4.4, 1);
-	  glutSolidCube(1);
-	glPopMatrix();
-
-    glColor3ub(-theta, theta + 69, -theta);			//Right arm
-	glPushMatrix();
-      glTranslatef(-2, 6.5, 0);
-      glRotatef(theta, 1, 0, 0);
-      glTranslatef(2, -6.5, 0);
-	  glTranslatef(-2, 5, 0);
-	  glScalef(1, 4, 1);
-	  glutSolidCube(1);
-	glPopMatrix();
-
-    glColor3ub(-theta * 8, theta + 69, theta * 17);			//Left arm
-	glPushMatrix();
-      glTranslatef(2, 6.5, 0);
-      glRotatef(-theta, 1, 0, 0);
-      glTranslatef(-2, -6.5, 0);
-	  glTranslatef(2, 5, 0);
-	  glScalef(1, 4, 1);
-	  glutSolidCube(1);
-	glPopMatrix();
-}
-
 //--------draws the mesh model of the cannon----------------------------
 void drawCannon()
 {
@@ -184,7 +139,6 @@ void drawCannon()
 		}
 	glEnd();
 }
-
 
 void drawWall(float length, float height, float width, int texture)
 {
@@ -225,8 +179,6 @@ void drawWall(float length, float height, float width, int texture)
     glTexCoord2f(0., 2.); glVertex3f(0.0f, 0.0f, -width);
 glEnd();
 }
-
-
 
 void drawCannonBody()
 {
@@ -302,7 +254,6 @@ void drawFin()
    glEnable(GL_TEXTURE_2D);
 }
 
-
 void drawTower(int n, float x, float y, int texture) {
 	glBindTexture(GL_TEXTURE_2D, texId[texture]);
 	int numSegments = 360;
@@ -341,16 +292,61 @@ void drawShip()
 
 	// Ship body
 	glPushMatrix();
+		glTranslatef(0, 20 + shipHeight, 0);
+		glRotatef(90, 1, 0, 0);
+		drawTower(50, 10, 20, 1);
+	glPopMatrix();
+
+	// Body center
+
+	glPushMatrix();
+		glRotatef(shipChange, 0, 1, 0);
 		glTranslatef(0, 40 + shipHeight, 0);
 		glRotatef(90, 1, 0, 0);
-		drawTower(50, 10, 40, 1);
+		drawTower(50, 2, 20, 4);
+	glPopMatrix();
+
+	// Center edges
+	glPushMatrix();
+		glRotatef(shipChange, 0, 1, 0);
+		glTranslatef(0, 40 + shipHeight, 9);
+		glRotatef(90, 1, 0, 0);
+		drawTower(50, 1, 20, 2);
+	glPopMatrix();
+
+	glPushMatrix();
+		glRotatef(shipChange, 0, 1, 0);
+		glTranslatef(0, 40 + shipHeight, -9);
+		glRotatef(90, 1, 0, 0);
+		drawTower(50, 1, 20, 2);
+	glPopMatrix();
+
+	glPushMatrix();
+		glRotatef(shipChange, 0, 1, 0);
+		glTranslatef(9, 40 + shipHeight, 0);
+		glRotatef(90, 1, 0, 0);
+		drawTower(50, 1, 20, 2);
+	glPopMatrix();
+
+	glPushMatrix();
+		glRotatef(shipChange, 0, 1, 0);
+		glTranslatef(-9, 40 + shipHeight, 0);
+		glRotatef(90, 1, 0, 0);
+		drawTower(50, 1, 20, 2);
+	glPopMatrix();
+
+	// Body top
+	glPushMatrix();
+		glTranslatef(0, 60 + shipHeight, 0);
+		glRotatef(90, 1, 0, 0);
+		drawTower(50, 10, 20, 1);
 	glPopMatrix();
 
 	// Top
 	glDisable(GL_TEXTURE_2D);
 	glPushMatrix();
 		glColor3ub(148, 0, 211);
-		glTranslatef(0, 40 + shipHeight, 0);
+		glTranslatef(0, 60 + shipHeight, 0);
 	    glRotatef(-90, 1, 0, 0);
 		glutSolidCone(10, 30, 50, 10);
 	glPopMatrix();
@@ -388,7 +384,6 @@ void drawShip()
 		drawFin();
 	glPopMatrix();
 }
-
 
 void drawCastle()
 {
@@ -504,6 +499,87 @@ void drawCastle()
 }
 
 
+void drawRobot2()
+{
+	glDisable(GL_TEXTURE_2D);
+	// Wheel
+	glPushMatrix();
+		glColor3f(0, 0, 0);
+		glTranslatef(0, 2.5, 0);
+		glutSolidSphere(2.5, 50, 10);
+	glPopMatrix();
+
+
+	// Base
+	glPushMatrix();
+		glColor3f(1, 0, 0);
+		glTranslatef(0, 20, 0);
+		glRotatef(90, 1, 0, 0);
+		glutSolidCone(5, 20, 50, 5);
+	glPopMatrix();
+	glEnable(GL_TEXTURE_2D);
+
+
+	// Body
+	glPushMatrix();
+		glTranslatef(0, 40, 0);
+		glRotatef(90, 1, 0, 0);
+		drawTower(50, 5, 20, 2);
+	glPopMatrix();
+
+	glDisable(GL_TEXTURE_2D);
+	// Head / Teapot
+	glPushMatrix();
+		glTranslatef(0, 43, 0);
+		glutSolidTeapot(6);
+	glPopMatrix();
+
+	// Eyes
+	glPushMatrix();
+		glColor3f(1, 0, 0);
+		glTranslatef(5, 44, -2);
+		glutSolidSphere(1, 50, 10);
+	glPopMatrix();
+	glPushMatrix();
+		glColor3f(1, 0, 0);
+		glTranslatef(5, 44, 2);
+		glutSolidSphere(1, 50, 10);
+	glPopMatrix();
+
+
+	// Atenna
+	glPushMatrix();
+		glColor3f(0, 1, 0);
+		glTranslatef(0, 53, 0);
+		glRotatef(90, 1, 0, 0);
+		drawTower(50, 0.3, 8, 3);
+	glPopMatrix();
+	glPushMatrix();
+		glColor3f(1, 0, 0);
+		glTranslatef(0, 53, 0);
+		glutSolidSphere(1, 50, 10);
+	glPopMatrix();
+
+
+	glEnable(GL_TEXTURE_2D);
+
+	// Arms
+	// Right
+	glPushMatrix();
+		glTranslatef(0, 38, 6);
+		glRotatef(85, 1, 0, 0);
+		drawTower(50, 1, 15, 3);
+	glPopMatrix();
+	// left
+	glPushMatrix();
+		glTranslatef(0, 38, -6);
+		glRotatef(95, 1, 0, 0);
+		drawTower(50, 1, 15, 3);
+	glPopMatrix();
+
+
+}
+
 void drawRobot()
 { // Teapot robot
 	// Wheel left
@@ -585,6 +661,19 @@ void drawFloor()
 	glEnd();
 }
 
+
+void timmerFunc(int val) {
+	if (shipLaunched) {
+		shipHeight += 5;
+	} else {
+		shipChange += 2.5;
+	}
+
+
+    glutTimerFunc(50, timmerFunc, val);
+    glutPostRedisplay();
+}
+
 //--Display: ----------------------------------------------------------------------
 //--This is the main display module containing function calls for generating
 //--the scene.
@@ -596,18 +685,17 @@ void display()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	gluLookAt(0, cam_hgt, 200, 0, 0, 0, 0, 1, 0);
+	gluLookAt(eye_x, 100, eye_z,  look_x, 100, look_z,   0, 1, 0);
 	glLightfv(GL_LIGHT0, GL_POSITION, lpos);   //set light position
 
     glRotatef(angle, 0.0, 1.0, 0.0);		//rotate the whole scene
 
-	//glScalef(2, 2, 2);
+	glScalef(2, 2, 2);
 
 	glDisable(GL_TEXTURE_2D);
-	drawFloor();
+		drawFloor();
 	glEnable(GL_TEXTURE_2D);
 
-    //drawCannonBody();
 	glPushMatrix();
 		glScalef(1.5, 1.5, 1.5);
     	drawCastle();
@@ -618,13 +706,13 @@ void display()
 	glPushMatrix();
 		glTranslatef(50, 0, -120);
 		glRotatef(90, 0, 1, 0);
-		drawRobot();
+		drawRobot2();
 	glPopMatrix();
 
 	glPushMatrix();
 		glTranslatef(-50, 0, -120);
 		glRotatef(90, 0, 1, 0);
-		drawRobot();
+		drawRobot2();
 	glPopMatrix();
 
 	glFlush();
@@ -660,15 +748,21 @@ void launchShip(int value) {
 // To enable the use of left and right arrow keys to rotate the scene
 void special(int key, int x, int y)
 {
-    if(key == GLUT_KEY_LEFT) angle -= 5;
-    else if(key == GLUT_KEY_RIGHT) angle += 5;
-	else if(key == GLUT_KEY_UP) cam_hgt += 5;
-	else if(key == GLUT_KEY_DOWN) cam_hgt -= 5;
+	if(key == GLUT_KEY_LEFT) angle -= 0.1;  //Change direction
+	else if(key == GLUT_KEY_RIGHT) angle += 0.1;
+	else if(key == GLUT_KEY_DOWN)
+	{  //Move backward
+		eye_x -= 10*sin(angle);
+		eye_z += 10*cos(angle);
+	}
+	else if(key == GLUT_KEY_UP)
+	{ //Move forward
+		eye_x += 10*sin(angle);
+		eye_z -= 10*cos(angle);
+	}
 
-	if(cam_hgt > 200) cam_hgt = 200;
-	else if(cam_hgt < 10) cam_hgt = 10;
-
-
+	look_x = eye_x + 100*sin(angle);
+	look_z = eye_z - 100*cos(angle);
 	glutPostRedisplay();
 }
 
@@ -676,7 +770,7 @@ void keys(unsigned char key_t, int x, int y)
 {
 	if (key_t == 115) {
 		if (shipHeight == 0) {
-			glutTimerFunc(50, launchShip, 1);
+			shipLaunched = true;
 		}
 	}
 }
@@ -708,7 +802,8 @@ int main(int argc, char** argv)
    glutDisplayFunc(display);
    glutSpecialFunc(special);
    glutKeyboardFunc(keys);
-   glutTimerFunc(50, moveCannon, 1);
+   //glutTimerFunc(50, moveCannon, 1);
+   glutTimerFunc(50, timmerFunc, 1);
    glutMainLoop();
    return 0;
 }
