@@ -644,6 +644,78 @@ void drawRobot()
 	glEnable(GL_TEXTURE_2D);
 }
 
+void drawRobot3()
+{
+	//Head
+	glPushMatrix();
+		glColor3f(0, 0, 0);
+		glTranslatef(0, 7.7, 0);
+		glutSolidCube(1.4);
+	glPopMatrix();
+
+	glPushMatrix();
+		glColor3f(0, 1, 0);
+		glTranslatef(0.25, 7.9, 0.7);
+		glutSolidSphere(0.15, 50, 10);
+	glPopMatrix();
+	glPushMatrix();
+		glColor3f(0, 1, 0);
+		glTranslatef(-0.25, 7.9, 0.7);
+		glutSolidSphere(0.15, 50, 10);
+	glPopMatrix();
+
+			//Torso
+	glPushMatrix();
+		glColor3f(1, 1, 1);
+	  glTranslatef(0, 5.5, 0);
+	  glScalef(3, 3, 1.4);
+	  glutSolidCube(1);
+	glPopMatrix();
+
+	//Right leg
+	glPushMatrix();
+		glColor3f(1, 0, 0);
+      glTranslatef(-0.8, 4, 0);
+      glRotatef(-theta, 1, 0, 0);
+      glTranslatef(0.8, -4, 0);
+	  glTranslatef(-0.8, 2.2, 0);
+	  glScalef(1, 4.4, 1);
+	  glutSolidCube(1);
+	glPopMatrix();
+
+//Left leg
+	glPushMatrix();
+		glColor3f(1, 0, 0);
+      glTranslatef(0.8, 4, 0);
+      glRotatef(theta, 1, 0, 0);
+      glTranslatef(-0.8, -4, 0);
+      glTranslatef(0.8, 2.2, 0);
+	  glScalef(1, 4.4, 1);
+	  glutSolidCube(1);
+	glPopMatrix();
+
+//Right arm
+	glPushMatrix();
+		glColor3f(1, 0, 0);
+      glTranslatef(-2, 6.5, 0);
+      glRotatef(theta, 1, 0, 0);
+      glTranslatef(2, -6.5, 0);
+	  glTranslatef(-2, 5, 0);
+	  glScalef(1, 4, 1);
+	  glutSolidCube(1);
+	glPopMatrix();
+
+	//Left arm
+	glPushMatrix();
+		glColor3f(1, 0, 0);
+      glTranslatef(2, 6.5, 0);
+      glRotatef(-theta, 1, 0, 0);
+      glTranslatef(-2, -6.5, 0);
+	  glTranslatef(2, 5, 0);
+	  glScalef(1, 4, 1);
+	  glutSolidCube(1);
+	glPopMatrix();
+}
 
 //----------draw a floor plane-------------------
 void drawFloor()

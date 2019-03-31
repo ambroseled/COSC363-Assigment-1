@@ -211,7 +211,9 @@ void drawWall(float length, float height, float width, int texture)
 {
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texId[texture]);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glBegin(GL_QUADS);
+	glColor3f(1, 1, 1);
 
 
     // front
@@ -323,11 +325,12 @@ void drawFin()
 
 void drawTower(int n, float x, float y, int texture) {
 	glBindTexture(GL_TEXTURE_2D, texId[texture]);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glColor3f(1, 1, 1);
 	int numSegments = 360;
 	float textInc = 1.0f / numSegments;
     // Cylinder Bottom
     glBegin(GL_POLYGON);
-        glColor4f(1.0, 0.0, 0.0, 1.0);
         for(int i = 0; i <= (numSegments); i += (numSegments / n)) {
             float a = i * M_PI / 180; // degrees to radians
             glVertex3f(x * cos(a), x * sin(a), 0.0);
@@ -336,7 +339,6 @@ void drawTower(int n, float x, float y, int texture) {
 
     // Cylinder Top
     glBegin(GL_POLYGON);
-        glColor4f(0.0, 0.0, 1.0, 1.0);
         for(int i = 0; i <= (numSegments); i += (numSegments / n)) {
             float a = i * M_PI / 180; // degrees to radians
             glVertex3f(x * cos(a), x * sin(a), y);
@@ -345,7 +347,6 @@ void drawTower(int n, float x, float y, int texture) {
 
     // Cylinder "Cover"
     glBegin(GL_QUAD_STRIP);
-        glColor4f(1.0, 1.0, 0.0, 1.0);
         for(int i = 0; i < 480; i += (numSegments / n)) {
             float a = i * M_PI / 180; // degrees to radians
             glTexCoord2f(textInc * i, 0); glVertex3f(x * cos(a), x * sin(a), 0.0);
@@ -356,58 +357,74 @@ void drawTower(int n, float x, float y, int texture) {
 
 void drawRobot()
 {
-		//Head
-	glPushMatrix();
-		glColor3f(1, 1, 1);
-		glRotatef(30, 1, 0, 0);
-	    glTranslatef(0, 7.7, 0);
-	    glutSolidCube(1.4);
-	glPopMatrix();
-			//Torso
+	//Head
 	glPushMatrix();
 		glColor3f(0, 0, 0);
-		glRotatef(30, 1, 0, 0);
-		glTranslatef(0, 5.5, 0);
-		glScalef(3, 3, 1.4);
-		glutSolidCube(1);
+		glTranslatef(0, 7.7, 0);
+		glutSolidCube(1.4);
 	glPopMatrix();
+
+	glPushMatrix();
+		glColor3f(0, 1, 0);
+		glTranslatef(0.25, 7.9, 0.7);
+		glutSolidSphere(0.15, 50, 10);
+	glPopMatrix();
+	glPushMatrix();
+		glColor3f(0, 1, 0);
+		glTranslatef(-0.25, 7.9, 0.7);
+		glutSolidSphere(0.15, 50, 10);
+	glPopMatrix();
+
+			//Torso
+	glPushMatrix();
+		glColor3f(1, 1, 1);
+	  glTranslatef(0, 5.5, 0);
+	  glScalef(3, 3, 1.4);
+	  glutSolidCube(1);
+	glPopMatrix();
+
 	//Right leg
 	glPushMatrix();
 		glColor3f(1, 0, 0);
-		glTranslatef(-0.8, 3, 2);
-		glRotatef(-theta, 1, 0, 0);
-		glTranslatef(0.8, -3, 0);
-		glTranslatef(-0.8, 2.2, 0);
-		glScalef(1, 3.4, 1);
-		glutSolidCube(1);
+      glTranslatef(-0.8, 4, 0);
+      glRotatef(-theta, 1, 0, 0);
+      glTranslatef(0.8, -4, 0);
+	  glTranslatef(-0.8, 2.2, 0);
+	  glScalef(1, 4.4, 1);
+	  glutSolidCube(1);
 	glPopMatrix();
-	//Left leg
+
+//Left leg
 	glPushMatrix();
-		glColor3f(1, 0, 1);
-		glTranslatef(-0.8, 3, 2);
-		glRotatef(theta, 1, 0, 0);
-		glTranslatef(0.8, -3, 0);
-		glTranslatef(0.8, 2.2, 0);
-		glScalef(1, 3.4, 1);
-		glutSolidCube(1);
+		glColor3f(1, 0, 0);
+      glTranslatef(0.8, 4, 0);
+      glRotatef(theta, 1, 0, 0);
+      glTranslatef(-0.8, -4, 0);
+      glTranslatef(0.8, 2.2, 0);
+	  glScalef(1, 4.4, 1);
+	  glutSolidCube(1);
 	glPopMatrix();
-	//Right arm
+
+//Right arm
 	glPushMatrix();
-		glTranslatef(-2, 5, 3);
-		glRotatef(-50, 1, 0, 0);
-		glTranslatef(2, -6.5, 0);
-		glTranslatef(-2, 5, 0);
-		glScalef(1, 4, 1);
-		glutSolidCube(1);
+		glColor3f(1, 0, 0);
+      glTranslatef(-2, 6.5, 0);
+      glRotatef(theta, 1, 0, 0);
+      glTranslatef(2, -6.5, 0);
+	  glTranslatef(-2, 5, 0);
+	  glScalef(1, 4, 1);
+	  glutSolidCube(1);
 	glPopMatrix();
-			//Left arm
+
+	//Left arm
 	glPushMatrix();
-		glTranslatef(2, 5, 3);
-		glRotatef(-50, 1, 0, 0);
-		glTranslatef(-2, -6.5, 0);
-		glTranslatef(2, 5, 0);
-		glScalef(1, 4, 1);
-		glutSolidCube(1);
+		glColor3f(1, 0, 0);
+      glTranslatef(2, 6.5, 0);
+      glRotatef(-theta, 1, 0, 0);
+      glTranslatef(-2, -6.5, 0);
+	  glTranslatef(2, 5, 0);
+	  glScalef(1, 4, 1);
+	  glutSolidCube(1);
 	glPopMatrix();
 }
 
@@ -428,7 +445,7 @@ void drawShip()
 	glPushMatrix();
 		glRotatef(shipChange, 0, 1, 0);
 		glTranslatef(0, 40 + shipHeight, 0);
-		//glLightfv(GL_LIGHT1, GL_POSITION, lgt_pos);
+		glLightfv(GL_LIGHT1, GL_POSITION, lgt_pos);
 		glRotatef(90, 1, 0, 0);
 		drawTower(50, 2, 20, 4);
 
@@ -719,14 +736,14 @@ void drawUfo()
 
 	glDisable(GL_TEXTURE_2D);
 	glPushMatrix();
-		glColor3ub(shipHeight, shipChange, shipHeight);
+		glColor3f(0, 1, 0);
 		glTranslatef(0, 35 + shipHeight, 0);
 		glRotatef(90, 1, 0, 0);
 		glutSolidCone(100, 15, 50, 10);
 	glPopMatrix();
 
 	glPushMatrix();
-		glColor3ub(shipChange, shipHeight, shipChange);
+		glColor3f(1, 0, 0);
 		glTranslatef(0, 38 + shipHeight, 0);
 		glRotatef(-90, 1, 0, 0);
 		glutSolidCone(100, 15, 50, 10);
@@ -751,6 +768,8 @@ void skybox(){
 
   ////////////////////// LEFT WALL ///////////////////////
   glBindTexture(GL_TEXTURE_2D, texId[5]);
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+  glColor3f(1, 1, 1);
   glBegin(GL_QUADS);
   glTexCoord2f(0., 0.);  glVertex3f(-size,  0, size);
   glTexCoord2f(1., 0.);  glVertex3f(-size, 0., -size);
@@ -760,7 +779,8 @@ void skybox(){
 
   ////////////////////// FRONT WALL ///////////////////////
   glBindTexture(GL_TEXTURE_2D, texId[6]);
-  glColor3f(0, 1, 0);
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+  glColor3f(1, 1, 1);
   glBegin(GL_QUADS);
   glTexCoord2f(0., 0.);  glVertex3f(-size,  0, -size);
   glTexCoord2f(1., 0.);  glVertex3f(size, 0., -size);
@@ -770,7 +790,8 @@ void skybox(){
 
  ////////////////////// RIGHT WALL ///////////////////////
   glBindTexture(GL_TEXTURE_2D, texId[7]);
-  glColor3f(0, 0, 1);
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+  glColor3f(1, 1, 1);
   glBegin(GL_QUADS);
   glTexCoord2f(0., 0.);  glVertex3f(size,  0, -size);
   glTexCoord2f(1., 0.);  glVertex3f(size, 0, size);
@@ -781,7 +802,8 @@ void skybox(){
 
   ////////////////////// REAR WALL ////////////////////////
   glBindTexture(GL_TEXTURE_2D, texId[8]);
-  glColor3f(1, 1, 0);
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+  glColor3f(1, 1, 1);
   glBegin(GL_QUADS);
   glTexCoord2f(0., 0.);  glVertex3f( size, 0, size);
   glTexCoord2f(1., 0.);  glVertex3f(-size, 0,  size);
@@ -791,7 +813,8 @@ void skybox(){
 
   /////////////////////// TOP //////////////////////////
   glBindTexture(GL_TEXTURE_2D, texId[9]);
-  glColor3f(1, 0, 1);
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+  glColor3f(1, 1, 1);
   glBegin(GL_QUADS);
   glTexCoord2f(0., 0.);  glVertex3f(-size, size, -size);
   glTexCoord2f(1., 0.);  glVertex3f(size, size,  -size);
@@ -801,7 +824,8 @@ void skybox(){
 
   /////////////////////// FLOOR //////////////////////////
   glBindTexture(GL_TEXTURE_2D, texId[10]);
-  glColor3f(0, 1, 1);
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+  glColor3f(1, 1, 1);
   glBegin(GL_QUADS);
   glTexCoord2f(0., 0.);  glVertex3f(-size, 0., size);
   glTexCoord2f(1., 0.);  glVertex3f(size, 0.,  size);
@@ -810,7 +834,6 @@ void skybox(){
   glEnd();
 
 }
-
 
 //---------------------------------------------------------------------
 void initialise(void)
@@ -826,7 +849,7 @@ void initialise(void)
     loadGLTextures();
 	loadMeshFile("Cannon.off");
 	glEnable(GL_DEPTH_TEST);
-    glEnable(GL_TEXTURE_2D);
+
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_LIGHTING);
 
@@ -849,6 +872,13 @@ void initialise(void)
 	glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 90.0);
     glLightf(GL_LIGHT2, GL_SPOT_EXPONENT,10.1);
 
+	glEnable(GL_LIGHT3);
+	glLightfv(GL_LIGHT3, GL_AMBIENT, grey);
+    glLightfv(GL_LIGHT3, GL_DIFFUSE, white);
+    glLightfv(GL_LIGHT3, GL_SPECULAR, white);
+	glLightf(GL_LIGHT3, GL_SPOT_CUTOFF, 90.0);
+    glLightf(GL_LIGHT3, GL_SPOT_EXPONENT,10.1);
+
 	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, mat_col);
  	glMaterialfv(GL_FRONT, GL_SPECULAR, white);
  	glMaterialf(GL_FRONT, GL_SHININESS, 50);
@@ -857,6 +887,8 @@ void initialise(void)
 
 	gluQuadricDrawStyle (q, GLU_FILL );
 	gluQuadricNormals	(q, GLU_SMOOTH );
+
+	glEnable(GL_TEXTURE_2D);
 	gluQuadricTexture (q, GL_TRUE);
 
     glMatrixMode (GL_PROJECTION);
@@ -871,7 +903,8 @@ void display(void)
 	float cdr=3.14159265/180.0;	//Conversion from degrees to radians
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	float lgt_pos0[] = {0.0f, 8000.0f, 150000.0f, 1.0f};
-
+	float lgt_pos3[] = {0.0f, 0.0f, 0.0f, 1.0f};
+	float lgt_dir3[] = {-1., -1., 0.};
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	xlook = -100.0*sin(lookAngle*cdr);
@@ -903,21 +936,11 @@ void display(void)
 		drawUfo();
 	glPopMatrix();
 
-
-	glPushMatrix();
-		// TODO move this to be infront of the robot
-		glTranslatef(0, 0, 10000);
-		glRotatef(-robotAngle, 0, 1, 0);
-		glTranslatef(0, 0, -10000);
-		glScalef(5000, 5000, 5000);
-		drawWall(4, 4, 4, 0);
-	glPopMatrix();
-
 	glDisable(GL_TEXTURE_2D);
 	glPushMatrix();
-		glTranslatef(0, 0, 50000);
+		glTranslatef(0, 0, 30000);
 		glRotatef(-robotAngle, 0, 1, 0);
-		glTranslatef(0, 0, -50000);
+		glTranslatef(0, 0, -30000);
 		glRotatef(90, 0, 1, 0);
 		glScalef(5000, 5000, 5000);
 		drawRobot();
@@ -927,6 +950,8 @@ void display(void)
 	glPushMatrix();
 		glTranslatef(robot_1_pos[0], robot_1_pos[1], robot_1_pos[2]);
 		glRotatef(robotAngle1, 0, 1, 0);
+		glLightfv(GL_LIGHT3, GL_POSITION, lgt_pos3);
+		glLightfv(GL_LIGHT3, GL_SPOT_DIRECTION, lgt_dir3);
 		glScalef(800, 800, 800);
 		drawRobot2();
 	glPopMatrix();
@@ -1030,11 +1055,10 @@ void timmerFunc(int val) {
 void keys(unsigned char key_t, int x, int y)
 {
 	if (key_t == 115) {
-		if (shipHeight == 0) {
-			shipLaunched = true;
-		}
+		shipLaunched = true;
 	}
 	if (key_t == 99) {
+		printf("%s\n", "noot");
 		fireCannon = true;
 	}
 }
