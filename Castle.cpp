@@ -29,7 +29,14 @@ float theta = 20;
 float shipHeight = 0;
 float shipChange = 0;
 bool shipLaunched = false;
-
+float robot_z = 0;
+float robot_angle = 90;
+float cannonRadians = 0.785398;
+float cannonVelocity = 30;
+bool fireCannon = false;
+int cannonCount = 1;
+GLUquadricObj*	q;
+bool shipUp = true;
 
 void loadGLTextures()				// Load bitmaps And Convert To Textures
 {
@@ -662,12 +669,62 @@ void drawFloor()
 }
 
 
+void drawUfo()
+{
+	float lgt_pos[] = {0., 0., 0.};
+	float lgt_dir[] = {1., -1., 0.};
+	float lgt_dir1[] = {-1., -1., 0.};
+
+
+	glDisable(GL_TEXTURE_2D);
+	glPushMatrix();
+		glTranslatef(0, 35, 0);
+		glRotatef(90, 1, 0, 0);
+		glutSolidCone(100, 15, 50, 10);
+	glPopMatrix();
+
+	glPushMatrix();
+
+		glTranslatef(0, 38, 0);
+		glRotatef(-90, 1, 0, 0);
+		glutSolidCone(100, 15, 50, 10);
+	glPopMatrix();
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texId[1]);
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glPushMatrix();
+		glRotatef(shipChange, 0, 1, 0);
+		glTranslatef(0, 40, 0);
+		glLightfv(GL_LIGHT1, GL_POSITION, lgt_pos);
+		glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, lgt_dir1);
+		glLightfv(GL_LIGHT0, GL_POSITION, lgt_pos);
+		glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, lgt_dir);
+		gluSphere(q, 30, 50, 10);
+	glPopMatrix();
+}
+
+
 void timmerFunc(int val) {
 	if (shipLaunched) {
 		shipHeight += 5;
 	} else {
+		if (shipUp) {
+			shipHeight += 0.25;
+			if (shipHeight >= 40) {
+				shipUp = false;
+			}
+		} else {
+			shipHeight -= 0.25;
+			if (shipHeight <= 0) {
+				shipUp = true;
+			}
+		}
 		shipChange += 2.5;
 	}
+
+	robot_angle += 5;
+
 
 
     glutTimerFunc(50, timmerFunc, val);
@@ -685,8 +742,9 @@ void display()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+
 	gluLookAt(eye_x, 100, eye_z,  look_x, 100, look_z,   0, 1, 0);
-	glLightfv(GL_LIGHT0, GL_POSITION, lpos);   //set light position
+	//glLightfv(GL_LIGHT0, GL_POSITION, lpos);   //set light position
 
     glRotatef(angle, 0.0, 1.0, 0.0);		//rotate the whole scene
 
@@ -698,21 +756,33 @@ void display()
 
 	glPushMatrix();
 		glScalef(1.5, 1.5, 1.5);
-    	drawCastle();
+    	//drawCastle();
 	glPopMatrix();
 
-	drawShip();
+	//drawCannonBody();
 
 	glPushMatrix();
-		glTranslatef(50, 0, -120);
+		glTranslatef(0, shipHeight, 0);
+		drawUfo();
+	glPopMatrix();
+
+	//drawShip();
+	glPushMatrix();
+		glTranslatef(0, 10, 0);
+		//animatedThing();
+	glPopMatrix();
+
+	glPushMatrix();
+		glRotatef(robot_angle, 0, 1, 0);
+		glTranslatef(40, 0, 0);
 		glRotatef(90, 0, 1, 0);
-		drawRobot2();
+		//drawRobot2();
 	glPopMatrix();
 
 	glPushMatrix();
 		glTranslatef(-50, 0, -120);
 		glRotatef(90, 0, 1, 0);
-		drawRobot2();
+		//drawRobot2();
 	glPopMatrix();
 
 	glFlush();
@@ -721,16 +791,42 @@ void display()
 //------- Initialize OpenGL parameters -----------------------------------
 void initialize()
 {
+	float black[4] = {0.0, 0.0, 0.0, 1.0};
+    float white[4]  = {1.0, 1.0, 1.0, 1.0};
+
 	loadGLTextures();
     loadMeshFile("Cannon.off");				//Specify mesh file name here
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);	//Background colour
 
-	glEnable(GL_LIGHTING);					//Enable OpenGL states
-	glEnable(GL_LIGHT0);
+	q =  gluNewQuadric ( );
+
  	glEnable(GL_COLOR_MATERIAL);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_LIGHTING);
+
+	glEnable(GL_LIGHT0);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, black);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, white);
+	glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 90.0);
+    glLightf(GL_LIGHT0, GL_SPOT_EXPONENT,10.1);
+
+	glEnable(GL_LIGHT1);
+    glLightfv(GL_LIGHT1, GL_AMBIENT, black);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, white);
+    glLightfv(GL_LIGHT1, GL_SPECULAR, white);
+	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 90.0);
+    glLightf(GL_LIGHT1, GL_SPOT_EXPONENT,10.1);
+
+
+    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+	glEnable(GL_COLOR_MATERIAL);
 	glEnable(GL_NORMALIZE);
+
+	gluQuadricDrawStyle (q, GLU_FILL );
+	gluQuadricNormals	(q, GLU_SMOOTH );
+	gluQuadricTexture (q, GL_TRUE);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -773,16 +869,25 @@ void keys(unsigned char key_t, int x, int y)
 			shipLaunched = true;
 		}
 	}
+	if (key_t == 99) {
+		printf("%s\n", "noot");
+		fireCannon = true;
+	}
 }
 
 void moveCannon(int value) {
-	if (value == 1) {
-		cannonAngle += 0.4;
-		if (cannonAngle >= 65) value = 0;
-	} else {
-		cannonAngle -= 0.4;
-		if (cannonAngle <= 5) value = 1;
+	if (fireCannon) {
+		ball_pos[0] = cannonVelocity * 0.05 * cannonCount * cos(cannonRadians) + 38.88;
+		ball_pos[1] = -0.5*9.81*pow((0.05 * cannonCount), 2) + cannonVelocity * (0.05 * cannonCount) * sin(cannonRadians) + 64;
+		cannonCount++;
+		if (ball_pos[1] <= 0) {
+			fireCannon = false;
+		}
 	}
+
+
+
+
     glutPostRedisplay();
     glutTimerFunc(50, moveCannon, value);
 }
@@ -802,7 +907,7 @@ int main(int argc, char** argv)
    glutDisplayFunc(display);
    glutSpecialFunc(special);
    glutKeyboardFunc(keys);
-   //glutTimerFunc(50, moveCannon, 1);
+   glutTimerFunc(50, moveCannon, 1);
    glutTimerFunc(50, timmerFunc, 1);
    glutMainLoop();
    return 0;

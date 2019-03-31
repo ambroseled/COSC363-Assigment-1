@@ -18,8 +18,8 @@ using namespace std;
 #define GL_CLAMP_TO_EDGE 0x812F   //To get rid of seams between textures
 float lookAngle = 0.0;		//Camera rotation
 float movePos = 0.0;
-float size = 200000;
-float angle=0, look_x, look_z=-1., eye_x, eye_z;  //Camera parameters
+float size = 300000;
+float angle=0, look_x, look_z=-1., eye_x=-80000, eye_z=110000;  //Camera parameters
 
 float *x, *y, *z;  //vertex coordinate arrays
 int *t1, *t2, *t3; //triangles
@@ -31,8 +31,23 @@ float cannonAngle = 45;
 float shipHeight = 0;
 float shipChange = 0;
 bool shipLaunched = false;
-
-
+bool changeCamera = false;
+float lightAngle = 0;
+float robotAngle = 0;
+bool fireCannon = false;
+float gravAccel = 9.80665;
+float cannonRadians = 0.785398;
+float cannonVelocity = 100;
+int cannonCount = 1;
+GLUquadricObj*	q;
+float robot_1_pos[3] = {-200000.0, 0.0, 180000.0};
+bool shipUp = true;
+float robotAngle1 = 90;
+int robotState = 0;
+float theta = 0;
+bool gaurdForward = true;
+float robot2_z = -70;
+float gaurdAngle = 0;
 //-- Loads mesh data in OFF format    -------------------------------------
 void loadMeshFile(const char* fname)
 {
@@ -273,7 +288,7 @@ void drawCannonBody()
 
     glPushMatrix();
 		glColor3ub(0, 0, 0);
-	    glTranslatef(ball_pos[0], ball_pos[1], ball_pos[2]);
+	    glTranslatef(ball_pos[0], ball_pos[1], 0);
 	    glutSolidSphere(5, 36, 18);
     glPopMatrix();
 	glEnable(GL_TEXTURE_2D);
@@ -339,9 +354,68 @@ void drawTower(int n, float x, float y, int texture) {
     glEnd();
 }
 
+void drawRobot()
+{
+		//Head
+	glPushMatrix();
+		glColor3f(1, 1, 1);
+		glRotatef(30, 1, 0, 0);
+	    glTranslatef(0, 7.7, 0);
+	    glutSolidCube(1.4);
+	glPopMatrix();
+			//Torso
+	glPushMatrix();
+		glColor3f(0, 0, 0);
+		glRotatef(30, 1, 0, 0);
+		glTranslatef(0, 5.5, 0);
+		glScalef(3, 3, 1.4);
+		glutSolidCube(1);
+	glPopMatrix();
+	//Right leg
+	glPushMatrix();
+		glColor3f(1, 0, 0);
+		glTranslatef(-0.8, 3, 2);
+		glRotatef(-theta, 1, 0, 0);
+		glTranslatef(0.8, -3, 0);
+		glTranslatef(-0.8, 2.2, 0);
+		glScalef(1, 3.4, 1);
+		glutSolidCube(1);
+	glPopMatrix();
+	//Left leg
+	glPushMatrix();
+		glColor3f(1, 0, 1);
+		glTranslatef(-0.8, 3, 2);
+		glRotatef(theta, 1, 0, 0);
+		glTranslatef(0.8, -3, 0);
+		glTranslatef(0.8, 2.2, 0);
+		glScalef(1, 3.4, 1);
+		glutSolidCube(1);
+	glPopMatrix();
+	//Right arm
+	glPushMatrix();
+		glTranslatef(-2, 5, 3);
+		glRotatef(-50, 1, 0, 0);
+		glTranslatef(2, -6.5, 0);
+		glTranslatef(-2, 5, 0);
+		glScalef(1, 4, 1);
+		glutSolidCube(1);
+	glPopMatrix();
+			//Left arm
+	glPushMatrix();
+		glTranslatef(2, 5, 3);
+		glRotatef(-50, 1, 0, 0);
+		glTranslatef(-2, -6.5, 0);
+		glTranslatef(2, 5, 0);
+		glScalef(1, 4, 1);
+		glutSolidCube(1);
+	glPopMatrix();
+}
+
 void drawShip()
 {
+	float lgt_pos[] = {0., 0., 0.};
 
+	// TODO rotating light in the towers
 	// Ship body
 	glPushMatrix();
 		glTranslatef(0, 20 + shipHeight, 0);
@@ -354,8 +428,10 @@ void drawShip()
 	glPushMatrix();
 		glRotatef(shipChange, 0, 1, 0);
 		glTranslatef(0, 40 + shipHeight, 0);
+		//glLightfv(GL_LIGHT1, GL_POSITION, lgt_pos);
 		glRotatef(90, 1, 0, 0);
 		drawTower(50, 2, 20, 4);
+
 	glPopMatrix();
 
 	// Center edges
@@ -527,7 +603,7 @@ void drawCastle()
 		glPopMatrix();
 	glPopMatrix();
 
-
+	// Cannons
 	glPushMatrix();
 		glTranslatef(25, 0, -70);
 		glRotatef(90, 0, 1, 0);
@@ -548,8 +624,10 @@ void drawCastle()
 			drawCannonBody();
 		glPopMatrix();
 	glPopMatrix();
-}
 
+
+	glEnable(GL_TEXTURE_2D);
+}
 
 void drawRobot2()
 {
@@ -632,6 +710,42 @@ void drawRobot2()
 
 }
 
+void drawUfo()
+{
+	float lgt_pos[] = {-160000., 0., 160000.};
+	float lgt_dir[] = {1., -1., 0.};
+	float lgt_dir1[] = {-1., -1., 0.};
+
+
+	glDisable(GL_TEXTURE_2D);
+	glPushMatrix();
+		glColor3ub(shipHeight, shipChange, shipHeight);
+		glTranslatef(0, 35 + shipHeight, 0);
+		glRotatef(90, 1, 0, 0);
+		glutSolidCone(100, 15, 50, 10);
+	glPopMatrix();
+
+	glPushMatrix();
+		glColor3ub(shipChange, shipHeight, shipChange);
+		glTranslatef(0, 38 + shipHeight, 0);
+		glRotatef(-90, 1, 0, 0);
+		glutSolidCone(100, 15, 50, 10);
+	glPopMatrix();
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texId[1]);
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glPushMatrix();
+		glRotatef(shipChange, 0, 1, 0);
+		glTranslatef(0, 40 + shipHeight, 0);
+		glLightfv(GL_LIGHT2, GL_POSITION, lgt_pos);
+		glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, lgt_dir1);
+		glLightfv(GL_LIGHT1, GL_POSITION, lgt_pos);
+		glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, lgt_dir);
+		gluSphere(q, 30, 50, 10);
+	glPopMatrix();
+}
+
 void skybox(){
 	glEnable(GL_TEXTURE_2D);
 
@@ -701,17 +815,53 @@ void skybox(){
 //---------------------------------------------------------------------
 void initialise(void)
 {
+	float black[4] = {0.0, 0.0, 0.0, 1.0};
+    float white[4]  = {1.0, 1.0, 1.0, 1.0};
+	float grey[4] = {0.2, 0.2, 0.2, 1.0};
+	float mat_col[4] = {1.0, 1.0, 0.0, 1.0};
+
+	q =  gluNewQuadric ( );
+
+
     loadGLTextures();
 	loadMeshFile("Cannon.off");
 	glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
 	glEnable(GL_NORMALIZE);
-	glClearColor (0.0, 0.0, 0.0, 0.0);
+	glEnable(GL_LIGHTING);
 
+	glEnable(GL_LIGHT0);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, grey);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, white);
+
+	glEnable(GL_LIGHT1);
+    glLightfv(GL_LIGHT1, GL_AMBIENT, black);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, white);
+    glLightfv(GL_LIGHT1, GL_SPECULAR, white);
+	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 90.0);
+    glLightf(GL_LIGHT1, GL_SPOT_EXPONENT,10.1);
+
+	glEnable(GL_LIGHT2);
+    glLightfv(GL_LIGHT2, GL_AMBIENT, black);
+    glLightfv(GL_LIGHT2, GL_DIFFUSE, white);
+    glLightfv(GL_LIGHT2, GL_SPECULAR, white);
+	glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 90.0);
+    glLightf(GL_LIGHT2, GL_SPOT_EXPONENT,10.1);
+
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, mat_col);
+ 	glMaterialfv(GL_FRONT, GL_SPECULAR, white);
+ 	glMaterialf(GL_FRONT, GL_SHININESS, 50);
+	glEnable(GL_COLOR_MATERIAL);
+
+
+	gluQuadricDrawStyle (q, GLU_FILL );
+	gluQuadricNormals	(q, GLU_SMOOTH );
+	gluQuadricTexture (q, GL_TRUE);
 
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity ();
-    gluPerspective(80.0, 1.0, 10000.0, 500000.0);   //Perspective projection
+    gluPerspective(80.0, 1.0, 100000.0, 700000.0);   //Perspective projection
 }
 
 //---------------------------------------------------------------------
@@ -720,37 +870,64 @@ void display(void)
 	float xlook, zlook, ylook; //TODO look up and down too
 	float cdr=3.14159265/180.0;	//Conversion from degrees to radians
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	float lgt_pos0[] = {0.0f, 8000.0f, 150000.0f, 1.0f};
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	xlook = -100.0*sin(lookAngle*cdr);
 	zlook = -100.0*cos(lookAngle*cdr);
 
-	gluLookAt(eye_x, size/2, eye_z,  look_x, size/2, look_z,   0, 1, 0);
 
+	glLightfv(GL_LIGHT0, GL_POSITION, lgt_pos0);   //light position
+
+	if (changeCamera) {
+		// TODO Sort this shit out
+		gluLookAt(0, shipChange * 1000, 140000,  0, 0, 140000,   0, 1, 0);
+	} else {
+		gluLookAt(eye_x, size/2, eye_z,  look_x, size/2, look_z,   0, 1, 0);
+	}
+
+	glRotatef(180, 0, 1, 0);
+
+	//printf("%lf x: \n", eye_x);
+	//printf("%lf z: \n", eye_z);
 	glPushMatrix();
-		glTranslatef(0, 1000, 150000);
-		glScalef(850, 850, 850);
+		glTranslatef(-120000, 1000, 160000);
+		glScalef(1500, 1500, 1500);
     	drawCastle();
 	glPopMatrix();
 
 	glPushMatrix();
-		glTranslatef(0, 0, 150000);
-		glScalef(450, 450, 450);
-		drawShip();
+		glTranslatef(-120000, 0, 160000);
+		glScalef(300, 300, 300);
+		drawUfo();
 	glPopMatrix();
 
-	glPushMatrix();
-		glTranslatef(25000, 0, 80000);
-		glRotatef(90, 0, 1, 0);
-		glScalef(450, 450, 450);
-		drawRobot2();
-	glPopMatrix();
 
 	glPushMatrix();
-		glTranslatef(-25000, 0, 80000);
+		// TODO move this to be infront of the robot
+		glTranslatef(0, 0, 10000);
+		glRotatef(-robotAngle, 0, 1, 0);
+		glTranslatef(0, 0, -10000);
+		glScalef(5000, 5000, 5000);
+		drawWall(4, 4, 4, 0);
+	glPopMatrix();
+
+	glDisable(GL_TEXTURE_2D);
+	glPushMatrix();
+		glTranslatef(0, 0, 50000);
+		glRotatef(-robotAngle, 0, 1, 0);
+		glTranslatef(0, 0, -50000);
 		glRotatef(90, 0, 1, 0);
-		glScalef(450, 450, 450);
+		glScalef(5000, 5000, 5000);
+		drawRobot();
+	glPopMatrix();
+	glEnable(GL_TEXTURE_2D);
+
+	glPushMatrix();
+		glTranslatef(robot_1_pos[0], robot_1_pos[1], robot_1_pos[2]);
+		glRotatef(robotAngle1, 0, 1, 0);
+		glScalef(800, 800, 800);
 		drawRobot2();
 	glPopMatrix();
 
@@ -758,18 +935,91 @@ void display(void)
 	skybox();
 
 
-
+	glutSwapBuffers();
 	glFlush();
+
+}
+
+
+void setRobotState()
+{
+	if (robotState == 0 && robot_1_pos[2] <= -(size - 8000)) {
+		robotState = 1;
+		robotAngle1 -= 90;
+	} else if (robotState == 1 && robot_1_pos[0] >= (size - 8000)) {
+		robotState = 2;
+		robotAngle1 -= 90;
+	} else if (robotState == 2 && robot_1_pos[2] >= (size - 8000)) {
+		robotState = 3;
+		robotAngle1 -= 90;
+	} else if (robotState == 3 && robot_1_pos[0] <= -(size - 8000)) {
+		robotState = 0;
+		robotAngle1 -= 90;
+	}
 }
 
 
 void timmerFunc(int val) {
 	if (shipLaunched) {
 		shipHeight += 5;
-		shipChange += 20;
+		shipChange += 10;
 	} else {
+		if (shipUp) {
+			shipHeight += 0.75;
+			if (shipHeight >= 200) {
+				shipUp = false;
+			}
+		} else {
+			shipHeight -= 0.75;
+			if (shipHeight <= 0) {
+				shipUp = true;
+			}
+		}
 		shipChange += 2.5;
 	}
+
+
+	if (val == 1) {
+        theta += 1;
+        if (theta >= 20) {
+            theta = 20;
+            val = 0;
+        }
+    } else {
+        theta -= 1;
+        if (theta <= -20) {
+            theta = -20;
+            val = 1;
+        }
+    }
+
+
+	lightAngle ++;
+	if(lightAngle > 360) lightAngle = 0;
+
+	robotAngle += 2;
+
+	if (fireCannon) {
+		float time = 0.05 * cannonCount;
+		ball_pos[0] = cannonVelocity * time * cos(cannonRadians) + 38.88;
+		ball_pos[1] = -0.5 * gravAccel * pow(time, 2) + cannonVelocity * time * sin(cannonRadians) + 64;
+		cannonCount++;
+		if (ball_pos[1] <= 0) {
+			fireCannon = false;
+		}
+	}
+
+	if (robotState == 0) {
+		robot_1_pos[2] -= 4000;
+	} else if (robotState == 1) {
+		robot_1_pos[0] += 4000;
+	} else if (robotState == 2) {
+		robot_1_pos[2] += 4000;
+	} else if (robotState == 3) {
+		robot_1_pos[0] -= 4000;
+	}
+
+	setRobotState();
 
 
     glutTimerFunc(50, timmerFunc, val);
@@ -784,6 +1034,9 @@ void keys(unsigned char key_t, int x, int y)
 			shipLaunched = true;
 		}
 	}
+	if (key_t == 99) {
+		fireCannon = true;
+	}
 }
 
 //--------------------------------------------------------------
@@ -794,17 +1047,28 @@ void keys(unsigned char key_t, int x, int y)
 	 if(key == GLUT_KEY_LEFT) angle -= 0.1;  //Change direction
  	else if(key == GLUT_KEY_RIGHT) angle += 0.1;
  	else if(key == GLUT_KEY_DOWN)
- 	{  //Move backward
- 		eye_x -= 1000*sin(angle);
- 		eye_z += 1000*cos(angle);
+ 	{  // Move backward
+ 		eye_x -= 5000*sin(angle);
+ 		eye_z += 5000*cos(angle);
  	}
  	else if(key == GLUT_KEY_UP)
- 	{ //Move forward
- 		eye_x += 1000*sin(angle);
- 		eye_z -= 1000*cos(angle);
+ 	{ // Move forward
+ 		eye_x += 5000*sin(angle);
+ 		eye_z -= 5000*cos(angle);
  	}
 
-	//TODO collison detection on skybox
+	// Bounding box within the sky box
+	if (eye_x >= 170000 || eye_x <= -170000) {
+		eye_x = start_x;
+	}
+	if (eye_z >= 170000 || eye_z <= -170000) {
+		eye_z = start_z;
+	}
+
+	if (key == GLUT_KEY_HOME)
+	{
+		changeCamera = !changeCamera;
+	}
 
  	look_x = eye_x + 100*sin(angle);
  	look_z = eye_z - 100*cos(angle);
@@ -815,7 +1079,7 @@ void keys(unsigned char key_t, int x, int y)
 int main(int argc, char** argv)
 {
    glutInit(&argc, argv);
-   glutInitDisplayMode (GLUT_SINGLE | GLUT_DEPTH );
+   glutInitDisplayMode (GLUT_DOUBLE | GLUT_DEPTH );
    glutInitWindowSize (700, 700);
    glutInitWindowPosition (50, 50);
 
