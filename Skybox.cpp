@@ -5,6 +5,16 @@
 //  See Lab03.pdf for details
 //  ========================================================================
 
+//TODO: New four legged robot use the leg animation from lab, maybe make it a
+	  //trailer like thing with balls in the back
+//TODO: Need to cast a shadow of something
+//TODO: Fix the spotlights on the ship could add to the new robot
+//TODO: Need something animated in the castle
+//TODO: Fix second camera mode
+//TODO: Billboarding for some trees or something
+//TODO: Collison detection of the castle maybe, if there is time
+
+
 #include <iostream>
 #include <GL/freeglut.h>
 #include <cmath>
