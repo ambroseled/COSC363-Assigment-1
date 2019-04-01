@@ -777,6 +777,79 @@ void drawUfo()
 }
 
 
+void drawRobot4()
+{
+
+	glPushMatrix();
+		glColor3f(1, 1, 0);
+		glTranslatef(0, 5.9, 2);
+		glutSolidCube(1.4);
+	glPopMatrix();
+
+	glPushMatrix();
+		glColor3f(0, 1, 0);
+		glTranslatef(0.25, 6.1, 2.7);
+		glutSolidSphere(0.15, 50, 10);
+	glPopMatrix();
+	glPushMatrix();
+		glColor3f(0, 1, 0);
+		glTranslatef(-0.25, 6.1, 2.7);
+		glutSolidSphere(0.15, 50, 10);
+	glPopMatrix();
+
+			//Torso
+	glPushMatrix();
+	  glColor3f(0, 0, 0);
+	  glTranslatef(0, 4.5, 0);
+	  glScalef(3, 1.4, 5.4);
+	  glutSolidCube(1);
+	glPopMatrix();
+
+	//Right leg
+	glPushMatrix();
+		glColor3f(1, 0, 0);
+      glTranslatef(-0.8, 4, 0);
+      glRotatef(theta, 1, 0, 0);
+      glTranslatef(0.8, -4, 0);
+	  glTranslatef(-0.8, 2.2, -2);
+	  glScalef(1, 4.4, 1);
+	  glutSolidCube(1);
+	glPopMatrix();
+
+	//Left leg
+	glPushMatrix();
+		glColor3f(1, 0, 0);
+      glTranslatef(-0.8, 4, 0);
+      glRotatef(theta, 1, 0, 0);
+      glTranslatef(0.8, -4, 0);
+	  glTranslatef(0.8, 2.2, -2);
+	  glScalef(1, 4.4, 1);
+	  glutSolidCube(1);
+	glPopMatrix();
+
+	//Right leg front
+	glPushMatrix();
+		glColor3f(1, 0, 0);
+      glTranslatef(-0.8, 4, 0);
+      glRotatef(-theta, 1, 0, 0);
+      glTranslatef(0.8, -4, 0);
+	  glTranslatef(-0.8, 2.2, 2);
+	  glScalef(1, 4.4, 1);
+	  glutSolidCube(1);
+	glPopMatrix();
+
+	//Left leg front
+	glPushMatrix();
+		glColor3f(1, 0, 0);
+      glTranslatef(-0.8, 4, 0);
+      glRotatef(-theta, 1, 0, 0);
+      glTranslatef(0.8, -4, 0);
+	  glTranslatef(0.8, 2.2, 2);
+	  glScalef(1, 4.4, 1);
+	  glutSolidCube(1);
+	glPopMatrix();
+}
+
 void timmerFunc(int val) {
 	if (shipLaunched) {
 		shipHeight += 5;
@@ -833,9 +906,11 @@ void display()
 
 	//drawCannonBody();
 
+	glDisable(GL_TEXTURE_2D);
 	glPushMatrix();
-		glTranslatef(0, shipHeight, 0);
-		drawUfo();
+		glTranslatef(0, 15, 0);
+		glScalef(10, 10, 10);
+		drawRobot4();
 	glPopMatrix();
 
 	//drawShip();
@@ -958,6 +1033,19 @@ void moveCannon(int value) {
 	}
 
 
+	if (value == 1) {
+        theta += 1;
+        if (theta >= 20) {
+            theta = 20;
+            value = 0;
+        }
+    } else {
+        theta -= 1;
+        if (theta <= -20) {
+            theta = -20;
+            value = 1;
+        }
+    }
 
 
     glutPostRedisplay();
