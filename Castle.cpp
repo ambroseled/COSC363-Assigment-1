@@ -24,7 +24,7 @@ int nvrt, ntri;    //total number of vertices and triangles
 float angle=0, look_x, look_z=-1., eye_x, eye_z;  //Camera parameters
 float cannonAngle = 45;
 float ball_pos[3] = {38.88, 64, 0};
-GLuint texId[5];
+GLuint texId[6];
 float theta = 20;
 float shipHeight = 0;
 float shipChange = 0;
@@ -37,10 +37,12 @@ bool fireCannon = false;
 int cannonCount = 1;
 GLUquadricObj*	q;
 bool shipUp = true;
+float doorAngle = 30;
+bool doorOut = true;
 
 void loadGLTextures()				// Load bitmaps And Convert To Textures
 {
-	glGenTextures(4, texId); 		// Create texture ids
+	glGenTextures(5, texId); 		// Create texture ids
 	// *** left ***
 	glBindTexture(GL_TEXTURE_2D, texId[0]);
 	loadBMP("brickTexture.bmp");
@@ -67,6 +69,11 @@ void loadGLTextures()				// Load bitmaps And Convert To Textures
 
 	glBindTexture(GL_TEXTURE_2D, texId[4]);
 	loadBMP("paintedLines.bmp");
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);	//Set texture parameters
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+
+	glBindTexture(GL_TEXTURE_2D, texId[5]);
+	loadBMP("doorTexture.bmp");
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);	//Set texture parameters
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
@@ -405,11 +412,24 @@ void drawCastle()
 		glTranslatef(20., 0., -50.);
 		drawWall(20, 40, 5, 0);
 	glPopMatrix();
-
-
 	glPushMatrix();
 		glTranslatef(-15., 30., -50.);
 		drawWall(35, 10, 5, 0);
+	glPopMatrix();
+
+
+	// Doors right
+	glPushMatrix();
+		glTranslatef(-15., 0., -50.);
+		glRotatef(doorAngle, 0, 1, 0);
+		drawWall(17, 30, 5, 5);
+	glPopMatrix();
+
+	// Doors left
+	glPushMatrix();
+		glTranslatef(20., 0., -55.);
+		glRotatef(-doorAngle + 180, 0, 1, 0);
+		drawWall(17, 30, 5, 5);
 	glPopMatrix();
 
 
@@ -672,6 +692,8 @@ void drawRobot3()
 	  glutSolidCube(1);
 	glPopMatrix();
 
+
+
 	//Right leg
 	glPushMatrix();
 		glColor3f(1, 0, 0);
@@ -805,6 +827,13 @@ void drawRobot4()
 	  glutSolidCube(1);
 	glPopMatrix();
 
+
+	glPushMatrix();
+		glTranslatef(0, 10, 0);
+		glRotatef(robot_angle, 1, 0, 0);
+		drawTower(50, 0.1, 5, 1);
+	glPopMatrix();
+
 	//Right leg
 	glPushMatrix();
 		glColor3f(1, 0, 0);
@@ -868,6 +897,18 @@ void timmerFunc(int val) {
 		shipChange += 2.5;
 	}
 
+	if (doorOut) {
+		doorAngle += 1;
+		if (doorAngle >= 85) {
+			doorOut = false;
+		}
+	} else {
+		doorAngle -= 1;
+		if (doorAngle  <= 0) {
+			doorOut = true;
+		}
+	}
+
 	robot_angle += 5;
 
 
@@ -901,16 +942,17 @@ void display()
 
 	glPushMatrix();
 		glScalef(1.5, 1.5, 1.5);
-    	//drawCastle();
+    	drawCastle();
 	glPopMatrix();
 
 	//drawCannonBody();
 
+
 	glDisable(GL_TEXTURE_2D);
 	glPushMatrix();
-		glTranslatef(0, 15, 0);
+		glTranslatef(0, 5, 0);
 		glScalef(10, 10, 10);
-		drawRobot4();
+		//drawRobot4();
 	glPopMatrix();
 
 	//drawShip();

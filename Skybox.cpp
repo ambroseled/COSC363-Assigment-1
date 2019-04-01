@@ -5,12 +5,12 @@
 //  See Lab03.pdf for details
 //  ========================================================================
 
-//TODO: New four legged robot use the leg animation from lab, maybe make it a
-	  //trailer like thing with balls in the back
-//TODO: Need to cast a shadow of something
-//TODO: Fix the spotlights on the ship could add to the new robot
+//TODO: Ask about second camera mode
+//TODO: Ask about spotlights not showing up
+//TODO: Ask abut the cannon shadow
+
+
 //TODO: Need something animated in the castle
-//TODO: Fix second camera mode
 //TODO: Billboarding for some trees or something
 //TODO: Collison detection of the castle maybe, if there is time
 
@@ -36,14 +36,14 @@ int *t1, *t2, *t3; //triangles
 int nvrt, ntri;    //total number of vertices and triangles
 float ball_pos[3] = {38.88, 64, 0};
 
-GLuint texId[11];
+GLuint texId[13];
 float cannonAngle = 45;
-float shipHeight = 0;
+float shipHeight = 40;
 float shipChange = 0;
 bool shipLaunched = false;
 bool changeCamera = false;
 float lightAngle = 0;
-float robotAngle = 0;
+
 bool fireCannon = false;
 float gravAccel = 9.80665;
 float cannonRadians = 0.785398;
@@ -51,13 +51,18 @@ float cannonVelocity = 100;
 int cannonCount = 1;
 GLUquadricObj*	q;
 float robot_1_pos[3] = {-200000.0, 0.0, 180000.0};
+float robot_pos[3] = {-20000, 0.0, 40000.0};
 bool shipUp = true;
 float robotAngle1 = 90;
+float robotAngle = 180;
 int robotState = 0;
+int robotState1 = 0;
 float theta = 0;
 bool gaurdForward = true;
 float robot2_z = -70;
 float gaurdAngle = 0;
+float doorAngle = 30;
+bool doorOut = true;
 //-- Loads mesh data in OFF format    -------------------------------------
 void loadMeshFile(const char* fname)
 {
@@ -102,7 +107,7 @@ void loadMeshFile(const char* fname)
 
 void loadGLTextures()				// Load bitmaps And Convert To Textures
 {
-	glGenTextures(11, texId); 		// Create texture ids
+	glGenTextures(13, texId); 		// Create texture ids
 
 	glBindTexture(GL_TEXTURE_2D, texId[0]);
 	loadBMP("brickTexture.bmp");
@@ -179,6 +184,19 @@ void loadGLTextures()				// Load bitmaps And Convert To Textures
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	glBindTexture(GL_TEXTURE_2D, texId[11]);
+	loadBMP("treeBillboard.bmp");
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+
+	glBindTexture(GL_TEXTURE_2D, texId[12]);
+	loadBMP("doorTexture.bmp");
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);	//Set texture parameters
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
 	glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
 }
@@ -542,6 +560,11 @@ void drawShip()
 
 void drawCastle()
 {
+
+	float shadowMat[16] = { 80,0,0,0, -80,0,-0,-1,
+     0,0,80,0, 0,0,0,80 };
+
+
 	glEnable(GL_TEXTURE_2D);
 	// Front wall
 	glPushMatrix();
@@ -558,6 +581,20 @@ void drawCastle()
 	glPushMatrix();
 		glTranslatef(-15., 30., -50.);
 		drawWall(35, 10, 5, 0);
+	glPopMatrix();
+
+	// Doors right
+	glPushMatrix();
+		glTranslatef(-15., 0., -50.);
+		glRotatef(doorAngle, 0, 1, 0);
+		drawWall(17, 30, 5, 12);
+	glPopMatrix();
+
+	// Doors left
+	glPushMatrix();
+		glTranslatef(20., 0., -55.);
+		glRotatef(-doorAngle + 180, 0, 1, 0);
+		drawWall(17, 30, 5, 12);
 	glPopMatrix();
 
 
@@ -640,6 +677,19 @@ void drawCastle()
 			drawCannonBody();
 		glPopMatrix();
 	glPopMatrix();
+
+	glDisable(GL_LIGHTING);
+    glPushMatrix(); //Draw Shadow Object
+        glMultMatrixf(shadowMat);
+		glTranslatef(25, 0, -70);
+		glRotatef(90, 0, 1, 0);
+		glScalef(0.25, 0.25, 0.25);
+		glPushMatrix();
+			glScalef(0.75, 0.75, 0.75);
+			drawCannonBody();
+		glPopMatrix();
+    glPopMatrix();
+    glEnable(GL_LIGHTING);
 
 
 	glPushMatrix();
@@ -747,14 +797,14 @@ void drawUfo()
 	glDisable(GL_TEXTURE_2D);
 	glPushMatrix();
 		glColor3f(0, 1, 0);
-		glTranslatef(0, 35 + shipHeight, 0);
+		glTranslatef(0, shipHeight - 5, 0);
 		glRotatef(90, 1, 0, 0);
 		glutSolidCone(100, 15, 50, 10);
 	glPopMatrix();
 
 	glPushMatrix();
 		glColor3f(1, 0, 0);
-		glTranslatef(0, 38 + shipHeight, 0);
+		glTranslatef(0, shipHeight - 5, 0);
 		glRotatef(-90, 1, 0, 0);
 		glutSolidCone(100, 15, 50, 10);
 	glPopMatrix();
@@ -764,7 +814,7 @@ void drawUfo()
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	glPushMatrix();
 		glRotatef(shipChange, 0, 1, 0);
-		glTranslatef(0, 40 + shipHeight, 0);
+		glTranslatef(0, shipHeight, 0);
 		glLightfv(GL_LIGHT2, GL_POSITION, lgt_pos);
 		glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, lgt_dir1);
 		glLightfv(GL_LIGHT1, GL_POSITION, lgt_pos);
@@ -915,17 +965,19 @@ void display(void)
 	float lgt_pos0[] = {0.0f, 8000.0f, 150000.0f, 1.0f};
 	float lgt_pos3[] = {0.0f, 0.0f, 0.0f, 1.0f};
 	float lgt_dir3[] = {-1., -1., 0.};
+	float shadowMat[16] = { 80,0,0,0, -80,0,-0,-1,
+     0,0,80,0, 0,0,0,80 };
+
+
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	xlook = -100.0*sin(lookAngle*cdr);
 	zlook = -100.0*cos(lookAngle*cdr);
 
-
 	glLightfv(GL_LIGHT0, GL_POSITION, lgt_pos0);   //light position
-
 	if (changeCamera) {
-		// TODO Sort this shit out
-		gluLookAt(0, shipChange * 1000, 140000,  0, 0, 140000,   0, 1, 0);
+		// TODO Sort this shit out  // ask why this is a 350 minimum
+		gluLookAt(120000, 305 * (shipHeight), -160000,  120000, 0, -160000,   0, 0, 1);
 	} else {
 		gluLookAt(eye_x, size/2, eye_z,  look_x, size/2, look_z,   0, 1, 0);
 	}
@@ -948,11 +1000,9 @@ void display(void)
 
 	glDisable(GL_TEXTURE_2D);
 	glPushMatrix();
-		glTranslatef(0, 0, 30000);
-		glRotatef(-robotAngle, 0, 1, 0);
-		glTranslatef(0, 0, -30000);
-		glRotatef(90, 0, 1, 0);
-		glScalef(5000, 5000, 5000);
+		glTranslatef(robot_pos[0], robot_pos[1], robot_pos[2]);
+		glRotatef(robotAngle, 0, 1, 0);
+		glScalef(4000, 4000, 4000);
 		drawRobot();
 	glPopMatrix();
 	glEnable(GL_TEXTURE_2D);
@@ -978,17 +1028,31 @@ void display(void)
 
 void setRobotState()
 {
-	if (robotState == 0 && robot_1_pos[2] <= -(size - 8000)) {
+	if (robotState == 0 && robot_pos[2] <= -126000) {
 		robotState = 1;
-		robotAngle1 -= 90;
-	} else if (robotState == 1 && robot_1_pos[0] >= (size - 8000)) {
+		robotAngle += 90;
+	} else if (robotState == 1 && robot_pos[0] <= -186000) {
 		robotState = 2;
-		robotAngle1 -= 90;
-	} else if (robotState == 2 && robot_1_pos[2] >= (size - 8000)) {
+		robotAngle += 90;
+	} else if (robotState == 2 && robot_pos[2] >= -2000) {
 		robotState = 3;
-		robotAngle1 -= 90;
-	} else if (robotState == 3 && robot_1_pos[0] <= -(size - 8000)) {
+		robotAngle += 90;
+	} else if (robotState == 3 && robot_pos[0] >= 0) {
 		robotState = 0;
+		robotAngle += 90;
+	}
+
+	if (robotState1 == 0 && robot_1_pos[2] <= -(size - 8000)) {
+		robotState1 = 1;
+		robotAngle1 -= 90;
+	} else if (robotState1 == 1 && robot_1_pos[0] >= (size - 8000)) {
+		robotState1 = 2;
+		robotAngle1 -= 90;
+	} else if (robotState1 == 2 && robot_1_pos[2] >= (size - 8000)) {
+		robotState1 = 3;
+		robotAngle1 -= 90;
+	} else if (robotState1 == 3 && robot_1_pos[0] <= -(size - 8000)) {
+		robotState1 = 0;
 		robotAngle1 -= 90;
 	}
 }
@@ -1006,7 +1070,7 @@ void timmerFunc(int val) {
 			}
 		} else {
 			shipHeight -= 0.75;
-			if (shipHeight <= 0) {
+			if (shipHeight <= 40) {
 				shipUp = true;
 			}
 		}
@@ -1029,10 +1093,22 @@ void timmerFunc(int val) {
     }
 
 
+	if (doorOut) {
+		doorAngle += 1;
+		if (doorAngle >= 85) {
+			doorOut = false;
+		}
+	} else {
+		doorAngle -= 1;
+		if (doorAngle  <= 0) {
+			doorOut = true;
+		}
+	}
+
+
 	lightAngle ++;
 	if(lightAngle > 360) lightAngle = 0;
 
-	robotAngle += 2;
 
 	if (fireCannon) {
 		float time = 0.05 * cannonCount;
@@ -1044,14 +1120,24 @@ void timmerFunc(int val) {
 		}
 	}
 
-	if (robotState == 0) {
+	if (robotState1 == 0) {
 		robot_1_pos[2] -= 4000;
-	} else if (robotState == 1) {
+	} else if (robotState1 == 1) {
 		robot_1_pos[0] += 4000;
-	} else if (robotState == 2) {
+	} else if (robotState1 == 2) {
 		robot_1_pos[2] += 4000;
-	} else if (robotState == 3) {
+	} else if (robotState1 == 3) {
 		robot_1_pos[0] -= 4000;
+	}
+
+	if (robotState == 0) {
+		robot_pos[2] -= 2000;
+	} else if (robotState == 1) {
+		robot_pos[0] -= 2000;
+	} else if (robotState == 2) {
+		robot_pos[2] += 2000;
+	} else if (robotState == 3) {
+		robot_pos[0] += 2000;
 	}
 
 	setRobotState();
