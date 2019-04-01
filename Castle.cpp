@@ -942,11 +942,12 @@ void display()
 
 	glPushMatrix();
 		glScalef(1.5, 1.5, 1.5);
-    	drawCastle();
+    	//drawCastle();
 	glPopMatrix();
 
 	//drawCannonBody();
 
+	drawUfo();
 
 	glDisable(GL_TEXTURE_2D);
 	glPushMatrix();
