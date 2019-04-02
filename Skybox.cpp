@@ -5,12 +5,9 @@
 //  See Lab03.pdf for details
 //  ========================================================================
 
-//TODO: Ask about second camera mode
-//TODO: Ask about spotlights not showing up
-//TODO: Ask abut the cannon shadow
-
 
 //TODO: Need something animated in the castle
+
 //TODO: Billboarding for some trees or something
 //TODO: Collison detection of the castle maybe, if there is time
 
@@ -34,11 +31,11 @@ float angle=0, look_x, look_z=-1., eye_x=-80000, eye_z=110000;  //Camera paramet
 float *x, *y, *z;  //vertex coordinate arrays
 int *t1, *t2, *t3; //triangles
 int nvrt, ntri;    //total number of vertices and triangles
-float ball_pos[3] = {38.88, 64, 0};
+float ball_pos[3] = {26.88, 84, 0};
 
 GLuint texId[13];
-float cannonAngle = 45;
-float shipHeight = 40;
+float cannonAngle = 0;
+float shipHeight = 400;
 float shipChange = 0;
 bool shipLaunched = false;
 bool changeCamera = false;
@@ -63,6 +60,9 @@ float robot2_z = -70;
 float gaurdAngle = 0;
 float doorAngle = 30;
 bool doorOut = true;
+bool showBallFront = false;
+
+bool raiseCannon = true;
 //-- Loads mesh data in OFF format    -------------------------------------
 void loadMeshFile(const char* fname)
 {
@@ -198,7 +198,7 @@ void loadGLTextures()				// Load bitmaps And Convert To Textures
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);	//Set texture parameters
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
-	glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
+	glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
 }
 
 //--Function to compute the normal vector of a triangle with index tindx ----------
@@ -221,7 +221,6 @@ void normal(int tindx)
 //--------draws the mesh model of the cannon----------------------------
 void drawCannon()
 {
-	glColor3f(0.4, 0.5, 0.4);
 
     //Construct the object model here using triangles read from OFF file
 	glBegin(GL_TRIANGLES);
@@ -311,6 +310,54 @@ void drawCannonBody()
 
     glPushMatrix();
 	    glTranslatef(-20, 30, 0); //Pivot point coordinates
+	    glRotatef(cannonAngle, 0, 0, 1); //Rotation
+	    glTranslatef(20, -30, 0);
+		glColor3f(0.4, 0.5, 0.4);
+	    drawCannon();
+    glPopMatrix();
+
+	if (showBallFront) {
+		glPushMatrix();
+			glColor3ub(0, 0, 0);
+		    glTranslatef(ball_pos[0], ball_pos[1], 0);
+		    glutSolidSphere(5, 36, 18);
+	    glPopMatrix();
+		glEnable(GL_TEXTURE_2D);
+	}
+
+}
+
+
+void drawCannonBodyShadow()
+{
+	glDisable(GL_TEXTURE_2D);
+    //--start here
+    glPushMatrix();
+	    glTranslatef(-10.0, 5.0, 17.0);
+	    glScalef(80.0, 10.0, 6.0);
+	    glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+	    glTranslatef(-20.0, 25.0, 17.0);
+	    glScalef(40.0, 30.0, 6.0);
+	    glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+	    glTranslatef(-10.0, 5.0, -17.0);
+	    glScalef(80.0, 10.0, 6.0);
+	    glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+	    glTranslatef(-20.0, 25.0, -17.0);
+	    glScalef(40.0, 30.0, 6.0);
+	    glutSolidCube(1);
+    glPopMatrix();
+
+    glPushMatrix();
+	    glTranslatef(-20, 30, 0); //Pivot point coordinates
 	    glRotatef(30, 0, 0, 1); //Rotation
 	    glTranslatef(20, -30, 0);
 	    drawCannon();
@@ -322,33 +369,6 @@ void drawCannonBody()
 	    glutSolidSphere(5, 36, 18);
     glPopMatrix();
 	glEnable(GL_TEXTURE_2D);
-}
-
-void drawFin()
-{
-	glDisable(GL_TEXTURE_2D);
-	glBegin(GL_TRIANGLES);           // Begin drawing the pyramid with 4 triangles
-      // Front
-      glVertex3f(0., 1., 0.);
-      glVertex3f(-0.2, -1., 2.);
-      glVertex3f(0.2, -1., 2);
-
-      // Right
-      glVertex3f(0., 1., 0.);
-      glVertex3f(0.2, -1., 2.);
-      glVertex3f(0.2, -1., 0);
-
-      // Back
-      glVertex3f(0., 1., 0.);
-      glVertex3f(0.2, -1., 0);
-      glVertex3f(-0.2, -1., 0.);
-
-      // Left
-      glVertex3f( 0., 1., 0.);
-      glVertex3f(-0.2, -1., 0.);
-      glVertex3f(-0.2, -1., 2.);
-   glEnd();
-   glEnable(GL_TEXTURE_2D);
 }
 
 void drawTower(int n, float x, float y, int texture) {
@@ -453,108 +473,6 @@ void drawRobot()
 	  glTranslatef(0.8, 2.2, 2);
 	  glScalef(1, 4.4, 1);
 	  glutSolidCube(1);
-	glPopMatrix();
-}
-
-void drawShip()
-{
-	float lgt_pos[] = {0., 0., 0.};
-
-	// TODO rotating light in the towers
-	// Ship body
-	glPushMatrix();
-		glTranslatef(0, 20 + shipHeight, 0);
-		glRotatef(90, 1, 0, 0);
-		drawTower(50, 10, 20, 1);
-	glPopMatrix();
-
-	// Body center
-
-	glPushMatrix();
-		glRotatef(shipChange, 0, 1, 0);
-		glTranslatef(0, 40 + shipHeight, 0);
-		glLightfv(GL_LIGHT1, GL_POSITION, lgt_pos);
-		glRotatef(90, 1, 0, 0);
-		drawTower(50, 2, 20, 4);
-
-	glPopMatrix();
-
-	// Center edges
-	glPushMatrix();
-		glRotatef(shipChange, 0, 1, 0);
-		glTranslatef(0, 40 + shipHeight, 9);
-		glRotatef(90, 1, 0, 0);
-		drawTower(50, 1, 20, 2);
-	glPopMatrix();
-
-	glPushMatrix();
-		glRotatef(shipChange, 0, 1, 0);
-		glTranslatef(0, 40 + shipHeight, -9);
-		glRotatef(90, 1, 0, 0);
-		drawTower(50, 1, 20, 2);
-	glPopMatrix();
-
-	glPushMatrix();
-		glRotatef(shipChange, 0, 1, 0);
-		glTranslatef(9, 40 + shipHeight, 0);
-		glRotatef(90, 1, 0, 0);
-		drawTower(50, 1, 20, 2);
-	glPopMatrix();
-
-	glPushMatrix();
-		glRotatef(shipChange, 0, 1, 0);
-		glTranslatef(-9, 40 + shipHeight, 0);
-		glRotatef(90, 1, 0, 0);
-		drawTower(50, 1, 20, 2);
-	glPopMatrix();
-
-	// Body top
-	glPushMatrix();
-		glTranslatef(0, 60 + shipHeight, 0);
-		glRotatef(90, 1, 0, 0);
-		drawTower(50, 10, 20, 1);
-	glPopMatrix();
-
-	// Top
-	glDisable(GL_TEXTURE_2D);
-	glPushMatrix();
-		glColor3ub(148, 0, 211);
-		glTranslatef(0, 60 + shipHeight, 0);
-	    glRotatef(-90, 1, 0, 0);
-		glutSolidCone(10, 30, 50, 10);
-	glPopMatrix();
-	glEnable(GL_TEXTURE_2D);
-
-	// Fins
-	glPushMatrix();
-		glColor3ub(148, 0, 211);
-		glTranslatef(0, 10 + shipHeight, 10);
-		glScalef(10, 10, 10);
-		drawFin();
-	glPopMatrix();
-
-	glPushMatrix();
-		glColor3ub(148, 0, 211);
-		glTranslatef(0, 10 + shipHeight, -10);
-		glRotatef(180, 0, 1, 0);
-		glScalef(10, 10, 10);
-		drawFin();
-	glPopMatrix();
-
-	glPushMatrix();
-		glColor3ub(148, 0, 211);
-		glTranslatef(-10, 10 + shipHeight, 0);
-		glRotatef(-90, 0, 1, 0);
-		glScalef(10, 10, 10);
-		drawFin();
-	glPopMatrix();
-
-	glPushMatrix();
-		glColor3ub(148, 0, 211);
-		glTranslatef(10, 10 + shipHeight, 0);
-		glRotatef(90, 0, 1, 0);
-		glScalef(10, 10, 10);
-		drawFin();
 	glPopMatrix();
 }
 
@@ -678,18 +596,6 @@ void drawCastle()
 		glPopMatrix();
 	glPopMatrix();
 
-	glDisable(GL_LIGHTING);
-    glPushMatrix(); //Draw Shadow Object
-        glMultMatrixf(shadowMat);
-		glTranslatef(25, 0, -70);
-		glRotatef(90, 0, 1, 0);
-		glScalef(0.25, 0.25, 0.25);
-		glPushMatrix();
-			glScalef(0.75, 0.75, 0.75);
-			drawCannonBody();
-		glPopMatrix();
-    glPopMatrix();
-    glEnable(GL_LIGHTING);
 
 
 	glPushMatrix();
@@ -701,6 +607,21 @@ void drawCastle()
 			drawCannonBody();
 		glPopMatrix();
 	glPopMatrix();
+
+
+	glDisable(GL_LIGHTING);
+    glPushMatrix(); //Draw Shadow Object
+        glMultMatrixf(shadowMat);
+		glTranslatef(-25, 0, -70);
+		glRotatef(90, 0, 1, 0);
+		glScalef(0.25, 0.25, 0.25);
+		glPushMatrix();
+			glColor3f(0, 0, 0);
+			glScalef(0.75, 0.75, 0.75);
+			drawCannonBodyShadow();
+		glPopMatrix();
+    glPopMatrix();
+    glEnable(GL_LIGHTING);
 
 
 	glEnable(GL_TEXTURE_2D);
@@ -789,7 +710,7 @@ void drawRobot2()
 
 void drawUfo()
 {
-	float lgt_pos[] = {-160000., 0., 160000.};
+	float lgt_pos[] = {0., 0., 0.};
 	float lgt_dir[] = {1., -1., 0.};
 	float lgt_dir1[] = {-1., -1., 0.};
 
@@ -821,6 +742,7 @@ void drawUfo()
 		glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, lgt_dir);
 		gluSphere(q, 30, 50, 10);
 	glPopMatrix();
+	glDisable(GL_TEXTURE_2D);
 }
 
 void skybox(){
@@ -881,18 +803,53 @@ void skybox(){
   glTexCoord2f(1., 1.);  glVertex3f(size, size,  size);
   glTexCoord2f(0., 1.);  glVertex3f(-size, size, size);
   glEnd();
+glDisable(GL_TEXTURE_2D);
 
-  /////////////////////// FLOOR //////////////////////////
-  glBindTexture(GL_TEXTURE_2D, texId[10]);
-  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-  glColor3f(1, 1, 1);
-  glBegin(GL_QUADS);
-  glTexCoord2f(0., 0.);  glVertex3f(-size, 0., size);
-  glTexCoord2f(1., 0.);  glVertex3f(size, 0.,  size);
-  glTexCoord2f(1., 1.);  glVertex3f(size, 0., -size);
-  glTexCoord2f(0., 1.);  glVertex3f(-size, 0., -size);
-  glEnd();
+	glPushMatrix();
+		glScalef(1000, 1000, 1000);
+		bool flag = false;
 
+		glBegin(GL_QUADS);
+		glNormal3f(0, 1, 0);
+		for(int x = -400; x <= 400; x += 20)
+		{
+			for(int z = -400; z <= 400; z += 20)
+			{
+				if(flag) glColor3f(0.6, 1.0, 0.8);
+				else glColor3f(0.8, 1.0, 0.6);
+				glVertex3f(x, 0, z);
+				glVertex3f(x, 0, z+20);
+				glVertex3f(x+20, 0, z+20);
+				glVertex3f(x+20, 0, z);
+				flag = !flag;
+			}
+		}
+		glEnd();
+	glPopMatrix();
+
+
+}
+
+void drawFloor()
+{
+	bool flag = false;
+
+	glBegin(GL_QUADS);
+	glNormal3f(0, 1, 0);
+	for(int x = -400; x <= 400; x += 20)
+	{
+		for(int z = -400; z <= 400; z += 20)
+		{
+			if(flag) glColor3f(0.6, 1.0, 0.8);
+			else glColor3f(0.8, 1.0, 0.6);
+			glVertex3f(x, 0, z);
+			glVertex3f(x, 0, z+20);
+			glVertex3f(x+20, 0, z+20);
+			glVertex3f(x+20, 0, z);
+			flag = !flag;
+		}
+	}
+	glEnd();
 }
 
 //---------------------------------------------------------------------
@@ -941,7 +898,7 @@ void initialise(void)
 
 	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, mat_col);
  	glMaterialfv(GL_FRONT, GL_SPECULAR, white);
- 	glMaterialf(GL_FRONT, GL_SHININESS, 50);
+ 	glMaterialf(GL_FRONT, GL_SHININESS, 40);
 	glEnable(GL_COLOR_MATERIAL);
 
 
@@ -962,7 +919,7 @@ void display(void)
 	float xlook, zlook, ylook; //TODO look up and down too
 	float cdr=3.14159265/180.0;	//Conversion from degrees to radians
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	float lgt_pos0[] = {0.0f, 8000.0f, 150000.0f, 1.0f};
+	float lgt_pos0[] = {0.0f, 4000.0f, -(size - 8000), 1.0f};
 	float lgt_pos3[] = {0.0f, 0.0f, 0.0f, 1.0f};
 	float lgt_dir3[] = {-1., -1., 0.};
 	float shadowMat[16] = { 80,0,0,0, -80,0,-0,-1,
@@ -971,21 +928,18 @@ void display(void)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	xlook = -100.0*sin(lookAngle*cdr);
-	zlook = -100.0*cos(lookAngle*cdr);
+
 
 	glLightfv(GL_LIGHT0, GL_POSITION, lgt_pos0);   //light position
 	if (changeCamera) {
 		// TODO Sort this shit out  // ask why this is a 350 minimum
 		gluLookAt(120000, 305 * (shipHeight), -160000,  120000, 0, -160000,   0, 0, 1);
 	} else {
-		gluLookAt(eye_x, size/2, eye_z,  look_x, size/2, look_z,   0, 1, 0);
+		gluLookAt(eye_x, size/3, eye_z,  look_x, size/3, look_z,   0, 1, 0);
 	}
 
 	glRotatef(180, 0, 1, 0);
 
-	//printf("%lf x: \n", eye_x);
-	//printf("%lf z: \n", eye_z);
 	glPushMatrix();
 		glTranslatef(-120000, 1000, 160000);
 		glScalef(1500, 1500, 1500);
@@ -1065,16 +1019,20 @@ void timmerFunc(int val) {
 	} else {
 		if (shipUp) {
 			shipHeight += 0.75;
-			if (shipHeight >= 200) {
+			if (shipHeight >= 450) {
 				shipUp = false;
 			}
 		} else {
 			shipHeight -= 0.75;
-			if (shipHeight <= 40) {
+			if (shipHeight <= 350) {
 				shipUp = true;
 			}
 		}
 		shipChange += 2.5;
+	}
+
+	if (shipHeight >= 1200) {
+		changeCamera = false;
 	}
 
 
@@ -1111,13 +1069,23 @@ void timmerFunc(int val) {
 
 
 	if (fireCannon) {
-		float time = 0.05 * cannonCount;
-		ball_pos[0] = cannonVelocity * time * cos(cannonRadians) + 38.88;
-		ball_pos[1] = -0.5 * gravAccel * pow(time, 2) + cannonVelocity * time * sin(cannonRadians) + 64;
-		cannonCount++;
-		if (ball_pos[1] <= 0) {
-			fireCannon = false;
+		if (raiseCannon) {
+			cannonAngle += 1;
+			if (cannonAngle >= 50) {
+				raiseCannon = false;
+			}
+		} else {
+			showBallFront = true;
+			float time = 0.05 * cannonCount;
+			ball_pos[0] = cannonVelocity * time * cos(cannonRadians) + 26.88;
+			ball_pos[1] = -0.5 * gravAccel * pow(time, 2) + cannonVelocity * time * sin(cannonRadians) + 84;
+			cannonCount++;
+			if (ball_pos[1] <= 0) {
+				fireCannon = false;
+			}
+
 		}
+
 	}
 
 	if (robotState1 == 0) {
