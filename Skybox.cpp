@@ -276,33 +276,29 @@ void drawWall(float length, float height, float width, int texture)
 glEnd();
 }
 
-void drawCannonBody()
+void drawCannonBody(int colourMode)
 {
 	glDisable(GL_TEXTURE_2D);
     //--start here
     glPushMatrix();
-		glColor3ub(102, 102, 102);
 	    glTranslatef(-10.0, 5.0, 17.0);
 	    glScalef(80.0, 10.0, 6.0);
 	    glutSolidCube(1);
     glPopMatrix();
 
     glPushMatrix();
-		glColor3ub(102, 102, 102);
 	    glTranslatef(-20.0, 25.0, 17.0);
 	    glScalef(40.0, 30.0, 6.0);
 	    glutSolidCube(1);
     glPopMatrix();
 
     glPushMatrix();
-		glColor3ub(102, 102, 102);
 	    glTranslatef(-10.0, 5.0, -17.0);
 	    glScalef(80.0, 10.0, 6.0);
 	    glutSolidCube(1);
     glPopMatrix();
 
     glPushMatrix();
-		glColor3ub(102, 102, 102);
 	    glTranslatef(-20.0, 25.0, -17.0);
 	    glScalef(40.0, 30.0, 6.0);
 	    glutSolidCube(1);
@@ -312,7 +308,12 @@ void drawCannonBody()
 	    glTranslatef(-20, 30, 0); //Pivot point coordinates
 	    glRotatef(cannonAngle, 0, 0, 1); //Rotation
 	    glTranslatef(20, -30, 0);
-		glColor3f(0.4, 0.5, 0.4);
+		if (colourMode == 0) {
+			glColor3f(0.4, 0.5, 0.4);
+		} else {
+			glColor3f(0, 0, 0);
+		}
+
 	    drawCannon();
     glPopMatrix();
 
@@ -592,9 +593,24 @@ void drawCastle()
 		glScalef(0.25, 0.25, 0.25);
 		glPushMatrix();
 			glScalef(0.75, 0.75, 0.75);
-			drawCannonBody();
+			glColor3ub(102, 102, 102);
+			drawCannonBody(0);
 		glPopMatrix();
 	glPopMatrix();
+
+	glDisable(GL_LIGHTING);
+    glPushMatrix(); //Draw Shadow Object
+		glColor3f(0, 0, 0);
+        glMultMatrixf(shadowMat);
+		glTranslatef(25, 0, -70);
+		glRotatef(90, 0, 1, 0);
+		glScalef(0.25, 0.25, 0.25);
+		glPushMatrix();
+			glScalef(0.75, 0.75, 0.75);
+			drawCannonBody(1);
+		glPopMatrix();
+    glPopMatrix();
+    glEnable(GL_LIGHTING);
 
 
 
@@ -604,21 +620,21 @@ void drawCastle()
 		glScalef(0.25, 0.25, 0.25);
 		glPushMatrix();
 			glScalef(0.75, 0.75, 0.75);
-			drawCannonBody();
+			glColor3ub(102, 102, 102);
+			drawCannonBody(0);
 		glPopMatrix();
 	glPopMatrix();
 
-
 	glDisable(GL_LIGHTING);
     glPushMatrix(); //Draw Shadow Object
+		glColor3f(0, 0, 0);
         glMultMatrixf(shadowMat);
 		glTranslatef(-25, 0, -70);
 		glRotatef(90, 0, 1, 0);
 		glScalef(0.25, 0.25, 0.25);
 		glPushMatrix();
-			glColor3f(0, 0, 0);
 			glScalef(0.75, 0.75, 0.75);
-			drawCannonBodyShadow();
+			drawCannonBody(1);
 		glPopMatrix();
     glPopMatrix();
     glEnable(GL_LIGHTING);
@@ -910,7 +926,7 @@ void initialise(void)
 
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity ();
-    gluPerspective(80.0, 1.0, 100000.0, 700000.0);   //Perspective projection
+    gluPerspective(80.0, 1.0, 5000.0, 700000.0);   //Perspective projection
 }
 
 //---------------------------------------------------------------------
@@ -933,9 +949,9 @@ void display(void)
 	glLightfv(GL_LIGHT0, GL_POSITION, lgt_pos0);   //light position
 	if (changeCamera) {
 		// TODO Sort this shit out  // ask why this is a 350 minimum
-		gluLookAt(120000, 305 * (shipHeight), -160000,  120000, 0, -160000,   0, 0, 1);
+		gluLookAt(120000, 305 * (shipHeight - 50), -160000,  120000, 0, -160000,   0, 0, 1);
 	} else {
-		gluLookAt(eye_x, size/3, eye_z,  look_x, size/3, look_z,   0, 1, 0);
+		gluLookAt(eye_x, size/8, eye_z,  look_x, size/8, look_z,   0, 1, 0);
 	}
 
 	glRotatef(180, 0, 1, 0);
@@ -970,9 +986,7 @@ void display(void)
 		drawRobot2();
 	glPopMatrix();
 
-
 	skybox();
-
 
 	glutSwapBuffers();
 	glFlush();
