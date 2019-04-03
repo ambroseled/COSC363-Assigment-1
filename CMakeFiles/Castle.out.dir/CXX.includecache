@@ -6,25 +6,3 @@
 
 #IncludeRegexTransform: 
 
-/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1/Castle.cpp
-iostream
--
-fstream
--
-climits
--
-math.h
--
-GL/freeglut.h
--
-loadBMP.h
-/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1/loadBMP.h
-
-/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1/loadBMP.h
-iostream
--
-fstream
--
-GL/freeglut.h
--
-

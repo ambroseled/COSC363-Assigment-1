@@ -123,46 +123,6 @@ Skybox.out/fast:
 	$(MAKE) -f CMakeFiles/Skybox.out.dir/build.make CMakeFiles/Skybox.out.dir/build
 .PHONY : Skybox.out/fast
 
-#=============================================================================
-# Target rules for targets named Castle.out
-
-# Build rule for target.
-Castle.out: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 Castle.out
-.PHONY : Castle.out
-
-# fast build rule for target.
-Castle.out/fast:
-	$(MAKE) -f CMakeFiles/Castle.out.dir/build.make CMakeFiles/Castle.out.dir/build
-.PHONY : Castle.out/fast
-
-Castle.o: Castle.cpp.o
-
-.PHONY : Castle.o
-
-# target to build an object file
-Castle.cpp.o:
-	$(MAKE) -f CMakeFiles/Castle.out.dir/build.make CMakeFiles/Castle.out.dir/Castle.cpp.o
-.PHONY : Castle.cpp.o
-
-Castle.i: Castle.cpp.i
-
-.PHONY : Castle.i
-
-# target to preprocess a source file
-Castle.cpp.i:
-	$(MAKE) -f CMakeFiles/Castle.out.dir/build.make CMakeFiles/Castle.out.dir/Castle.cpp.i
-.PHONY : Castle.cpp.i
-
-Castle.s: Castle.cpp.s
-
-.PHONY : Castle.s
-
-# target to generate assembly for a file
-Castle.cpp.s:
-	$(MAKE) -f CMakeFiles/Castle.out.dir/build.make CMakeFiles/Castle.out.dir/Castle.cpp.s
-.PHONY : Castle.cpp.s
-
 Skybox.o: Skybox.cpp.o
 
 .PHONY : Skybox.o
@@ -197,12 +157,8 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... edit_cache"
 	@echo "... Skybox.out"
-	@echo "... Castle.out"
-	@echo "... Castle.o"
-	@echo "... Castle.i"
-	@echo "... Castle.s"
+	@echo "... edit_cache"
 	@echo "... Skybox.o"
 	@echo "... Skybox.i"
 	@echo "... Skybox.s"

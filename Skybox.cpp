@@ -5,13 +5,6 @@
 //  See Lab03.pdf for details
 //  ========================================================================
 
-
-//TODO: Need something animated in the castle
-
-//TODO: Billboarding for some trees or something
-//TODO: Collison detection of the castle maybe, if there is time
-
-
 #include <iostream>
 #include <GL/freeglut.h>
 #include <cmath>
@@ -33,7 +26,7 @@ int *t1, *t2, *t3; //triangles
 int nvrt, ntri;    //total number of vertices and triangles
 float ball_pos[3] = {26.88, 84, 0};
 
-GLuint texId[13];
+GLuint texId[10];
 float cannonAngle = 0;
 float shipHeight = 400;
 float shipChange = 0;
@@ -63,7 +56,8 @@ bool doorOut = true;
 bool showBallFront = false;
 
 bool raiseCannon = true;
-//-- Loads mesh data in OFF format    -------------------------------------
+//========================================================================================
+// Loading a mesh file
 void loadMeshFile(const char* fname)
 {
 	ifstream fp_in;
@@ -104,104 +98,85 @@ void loadMeshFile(const char* fname)
 	cout << " File successfully read." << endl;
 }
 
-
-void loadGLTextures()				// Load bitmaps And Convert To Textures
+// Loading the scenes textures
+void loadGLTextures()
 {
-	glGenTextures(13, texId); 		// Create texture ids
+	glGenTextures(10, texId); 		// Create texture ids
 
 	glBindTexture(GL_TEXTURE_2D, texId[0]);
-	loadBMP("brickTexture.bmp");
+	loadBMP("textures/brickTexture.bmp");
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);	//Set texture parameters
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
 
 	glBindTexture(GL_TEXTURE_2D, texId[1]);
-	loadBMP("brassTexture.bmp");
+	loadBMP("textures/brassTexture.bmp");
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);	//Set texture parameters
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
 
 	glBindTexture(GL_TEXTURE_2D, texId[2]);
-	loadBMP("metalTexture2.bmp");
+	loadBMP("textures/metalTexture.bmp");
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);	//Set texture parameters
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
 
 	glBindTexture(GL_TEXTURE_2D, texId[3]);
-	loadBMP("redPaint.bmp");
+	loadBMP("textures/redPaint.bmp");
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);	//Set texture parameters
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
-	glBindTexture(GL_TEXTURE_2D, texId[4]);
-	loadBMP("paintedLines.bmp");
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);	//Set texture parameters
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
 	// *** left ***
-	glBindTexture(GL_TEXTURE_2D, texId[5]);
-	loadTGA("skybox/iceflats_lf.tga");
+	glBindTexture(GL_TEXTURE_2D, texId[4]);
+	loadTGA("textures/iceflats_lf.tga");
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	// *** front ***
-	glBindTexture(GL_TEXTURE_2D, texId[6]);
-	loadTGA("skybox/iceflats_ft.tga");
+	glBindTexture(GL_TEXTURE_2D, texId[5]);
+	loadTGA("textures/iceflats_ft.tga");
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	// *** right ***
-	glBindTexture(GL_TEXTURE_2D, texId[7]);
-	loadTGA("skybox/iceflats_rt.tga");
+	glBindTexture(GL_TEXTURE_2D, texId[6]);
+	loadTGA("textures/iceflats_rt.tga");
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	// *** back***
-	glBindTexture(GL_TEXTURE_2D, texId[8]);
-	loadTGA("skybox/iceflats_bk.tga");
+	glBindTexture(GL_TEXTURE_2D, texId[7]);
+	loadTGA("textures/iceflats_bk.tga");
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	// *** top ***
+	glBindTexture(GL_TEXTURE_2D, texId[8]);
+	loadTGA("textures/iceflats_up.tga");
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+
 	glBindTexture(GL_TEXTURE_2D, texId[9]);
-	loadTGA("skybox/iceflats_up.tga");
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	// *** down ***
-	glBindTexture(GL_TEXTURE_2D, texId[10]);
-	loadTGA("skybox/iceflats_dn.tga");
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	glBindTexture(GL_TEXTURE_2D, texId[11]);
-	loadBMP("treeBillboard.bmp");
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-
-	glBindTexture(GL_TEXTURE_2D, texId[12]);
-	loadBMP("doorTexture.bmp");
+	loadBMP("textures/doorTexture.bmp");
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);	//Set texture parameters
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
 	glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
 }
 
-//--Function to compute the normal vector of a triangle with index tindx ----------
+// Used to calculate the normal
 void normal(int tindx)
 {
 	float x1 = x[t1[tindx]], x2 = x[t2[tindx]], x3 = x[t3[tindx]];
@@ -214,11 +189,7 @@ void normal(int tindx)
 	glNormal3f(nx, ny, nz);
 }
 
-// Above here - move o middleware module
-
-//========================================================================================
-
-//--------draws the mesh model of the cannon----------------------------
+// Drawing the cannon
 void drawCannon()
 {
 
@@ -234,48 +205,30 @@ void drawCannon()
 	glEnd();
 }
 
-void drawWall(float length, float height, float width, int texture)
+// Drawing the floor of the scene
+void drawFloor()
 {
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texId[texture]);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	bool flag = false;
+
 	glBegin(GL_QUADS);
-	glColor3f(1, 1, 1);
-
-
-    // front
-    glTexCoord2f(0., 0.); glVertex3f(0.0f, 0.0f, 0.0f);
-    glTexCoord2f(2., 0.); glVertex3f(length, 0.0f, 0.0f);
-    glTexCoord2f(2., 2.); glVertex3f(length, height, 0.0f);
-    glTexCoord2f(0., 2.); glVertex3f(0.0f, height, 0.0f);
-    // back
-    glTexCoord2f(0., 0.); glVertex3f(0.0f, 0.0f, -width);
-    glTexCoord2f(2., 0.); glVertex3f(length, 0.0f, -width);
-    glTexCoord2f(2., 2.); glVertex3f(length, height, -width);
-    glTexCoord2f(0., 2.); glVertex3f(0.0f, height, -width);
-    // right
-    glTexCoord2f(0., 0.); glVertex3f(length, 0.0f, 0.0f);
-    glTexCoord2f(2., 0.); glVertex3f(length, 0.0f, -width);
-    glTexCoord2f(2., 2.); glVertex3f(length, height, -width);
-    glTexCoord2f(0., 2.); glVertex3f(length, height, 0.0f);
-    // left
-    glTexCoord2f(0., 0.); glVertex3f(0.0f, 0.0f, 0.0f);
-    glTexCoord2f(2., 0.); glVertex3f(0.0f, 0.0f, -width);
-    glTexCoord2f(2., 2.); glVertex3f(0.0f, height, -width);
-    glTexCoord2f(0., 2.); glVertex3f(0.0f, height, 0.0f);
-    // top
-    glTexCoord2f(0., 0.); glVertex3f(0.0f, height, 0.0f);
-    glTexCoord2f(2., 0.); glVertex3f(length, height, 0.0f);
-    glTexCoord2f(2., 2.); glVertex3f(length, height, -width);
-    glTexCoord2f(0., 2.); glVertex3f(0.0f, height, -width);
-    // bottom
-    glTexCoord2f(0., 0.); glVertex3f(0.0f, 0.0f, 0.0f);
-    glTexCoord2f(2., 0.); glVertex3f(length, 0.0f, 0.0f);
-    glTexCoord2f(2., 2.); glVertex3f(length, 0.0f, -width);
-    glTexCoord2f(0., 2.); glVertex3f(0.0f, 0.0f, -width);
-glEnd();
+	glNormal3f(0, 1, 0);
+	for(int x = -400; x <= 400; x += 20)
+	{
+		for(int z = -400; z <= 400; z += 20)
+		{
+			if(flag) glColor3f(0.6, 1.0, 0.8);
+			else glColor3f(0.8, 1.0, 0.6);
+			glVertex3f(x, 0, z);
+			glVertex3f(x, 0, z+20);
+			glVertex3f(x+20, 0, z+20);
+			glVertex3f(x+20, 0, z);
+			flag = !flag;
+		}
+	}
+	glEnd();
 }
 
+// Drawing the cannon with its body
 void drawCannonBody(int colourMode)
 {
 	glDisable(GL_TEXTURE_2D);
@@ -328,7 +281,7 @@ void drawCannonBody(int colourMode)
 
 }
 
-
+// Drawing the cannon shadow
 void drawCannonBodyShadow()
 {
 	glDisable(GL_TEXTURE_2D);
@@ -371,39 +324,86 @@ void drawCannonBodyShadow()
     glPopMatrix();
 	glEnable(GL_TEXTURE_2D);
 }
+// Functions above here have been taken from the labs provided
+// drawCannonBodyShadow, drawCannonBody, drawCannon and loadGLTextures have been adapted
+//========================================================================================
 
-void drawTower(int n, float x, float y, int texture) {
+// Drawing a 'cube' with passed parameters, used mainly to make the castle walls
+void drawWall(float length, float height, float width, int texture)
+{
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texId[texture]);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glBegin(GL_QUADS);
+	glColor3f(1, 1, 1);
+
+
+    // front
+    glTexCoord2f(0., 0.); glVertex3f(0.0f, 0.0f, 0.0f);
+    glTexCoord2f(2., 0.); glVertex3f(length, 0.0f, 0.0f);
+    glTexCoord2f(2., 2.); glVertex3f(length, height, 0.0f);
+    glTexCoord2f(0., 2.); glVertex3f(0.0f, height, 0.0f);
+    // back
+    glTexCoord2f(0., 0.); glVertex3f(0.0f, 0.0f, -width);
+    glTexCoord2f(2., 0.); glVertex3f(length, 0.0f, -width);
+    glTexCoord2f(2., 2.); glVertex3f(length, height, -width);
+    glTexCoord2f(0., 2.); glVertex3f(0.0f, height, -width);
+    // right
+    glTexCoord2f(0., 0.); glVertex3f(length, 0.0f, 0.0f);
+    glTexCoord2f(2., 0.); glVertex3f(length, 0.0f, -width);
+    glTexCoord2f(2., 2.); glVertex3f(length, height, -width);
+    glTexCoord2f(0., 2.); glVertex3f(length, height, 0.0f);
+    // left
+    glTexCoord2f(0., 0.); glVertex3f(0.0f, 0.0f, 0.0f);
+    glTexCoord2f(2., 0.); glVertex3f(0.0f, 0.0f, -width);
+    glTexCoord2f(2., 2.); glVertex3f(0.0f, height, -width);
+    glTexCoord2f(0., 2.); glVertex3f(0.0f, height, 0.0f);
+    // top
+    glTexCoord2f(0., 0.); glVertex3f(0.0f, height, 0.0f);
+    glTexCoord2f(2., 0.); glVertex3f(length, height, 0.0f);
+    glTexCoord2f(2., 2.); glVertex3f(length, height, -width);
+    glTexCoord2f(0., 2.); glVertex3f(0.0f, height, -width);
+    // bottom
+    glTexCoord2f(0., 0.); glVertex3f(0.0f, 0.0f, 0.0f);
+    glTexCoord2f(2., 0.); glVertex3f(length, 0.0f, 0.0f);
+    glTexCoord2f(2., 2.); glVertex3f(length, 0.0f, -width);
+    glTexCoord2f(0., 2.); glVertex3f(0.0f, 0.0f, -width);
+glEnd();
+}
+
+// Drawing a cylinder that can be textured
+void drawTower(int n, float width, float height, int texture) {
 	glBindTexture(GL_TEXTURE_2D, texId[texture]);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glColor3f(1, 1, 1);
 	int numSegments = 360;
-	float textInc = 1.0f / numSegments;
-    // Cylinder Bottom
-    glBegin(GL_POLYGON);
-        for(int i = 0; i <= (numSegments); i += (numSegments / n)) {
-            float a = i * M_PI / 180; // degrees to radians
-            glVertex3f(x * cos(a), x * sin(a), 0.0);
-        }
-    glEnd();
+	float texInc = 1.0f / numSegments;
 
-    // Cylinder Top
-    glBegin(GL_POLYGON);
-        for(int i = 0; i <= (numSegments); i += (numSegments / n)) {
-            float a = i * M_PI / 180; // degrees to radians
-            glVertex3f(x * cos(a), x * sin(a), y);
-        }
-    glEnd();
+	// Top and bottom
+	for (int side = 0; side < 2; side++) {
+		glBegin(GL_POLYGON);
+	        for(int i = 0; i <= (numSegments); i += (numSegments / n)) {
+	            float angle = i * M_PI / 180;
+				if (side == 0) {
+					glVertex3f(width * cos(angle), width * sin(angle), 0.0);
+				} else {
+					glVertex3f(width * cos(angle), width * sin(angle), height);
+				}
+	        }
+	    glEnd();
+	}
 
-    // Cylinder "Cover"
+    // Body
     glBegin(GL_QUAD_STRIP);
         for(int i = 0; i < 480; i += (numSegments / n)) {
-            float a = i * M_PI / 180; // degrees to radians
-            glTexCoord2f(textInc * i, 0); glVertex3f(x * cos(a), x * sin(a), 0.0);
-            glTexCoord2f(textInc * i, 1); glVertex3f(x * cos(a), x * sin(a), y);
+            float angle = i * M_PI / 180;
+            glTexCoord2f(texInc * i, 0); glVertex3f(width * cos(angle), width * sin(angle), 0.0);
+            glTexCoord2f(texInc * i, 1); glVertex3f(width * cos(angle), width * sin(angle), height);
         }
     glEnd();
 }
 
+// Drawing the first robot
 void drawRobot()
 {
 
@@ -477,6 +477,7 @@ void drawRobot()
 	glPopMatrix();
 }
 
+// Drawing the castle
 void drawCastle()
 {
 
@@ -506,14 +507,14 @@ void drawCastle()
 	glPushMatrix();
 		glTranslatef(-15., 0., -50.);
 		glRotatef(doorAngle, 0, 1, 0);
-		drawWall(17, 30, 5, 12);
+		drawWall(17, 30, 5, 9);
 	glPopMatrix();
 
 	// Doors left
 	glPushMatrix();
 		glTranslatef(20., 0., -55.);
 		glRotatef(-doorAngle + 180, 0, 1, 0);
-		drawWall(17, 30, 5, 12);
+		drawWall(17, 30, 5, 9);
 	glPopMatrix();
 
 
@@ -643,6 +644,7 @@ void drawCastle()
 	glEnable(GL_TEXTURE_2D);
 }
 
+// Drawing the second robot
 void drawRobot2()
 {
 	glDisable(GL_TEXTURE_2D);
@@ -724,6 +726,7 @@ void drawRobot2()
 
 }
 
+// Drawing the alien ship
 void drawUfo()
 {
 	float lgt_pos[] = {0., 0., 0.};
@@ -761,11 +764,12 @@ void drawUfo()
 	glDisable(GL_TEXTURE_2D);
 }
 
+// Drawing the skybox
 void skybox(){
 	glEnable(GL_TEXTURE_2D);
 
   ////////////////////// LEFT WALL ///////////////////////
-  glBindTexture(GL_TEXTURE_2D, texId[5]);
+  glBindTexture(GL_TEXTURE_2D, texId[4]);
   glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
   glColor3f(1, 1, 1);
   glBegin(GL_QUADS);
@@ -776,7 +780,7 @@ void skybox(){
   glEnd();
 
   ////////////////////// FRONT WALL ///////////////////////
-  glBindTexture(GL_TEXTURE_2D, texId[6]);
+  glBindTexture(GL_TEXTURE_2D, texId[5]);
   glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
   glColor3f(1, 1, 1);
   glBegin(GL_QUADS);
@@ -787,7 +791,7 @@ void skybox(){
   glEnd();
 
  ////////////////////// RIGHT WALL ///////////////////////
-  glBindTexture(GL_TEXTURE_2D, texId[7]);
+  glBindTexture(GL_TEXTURE_2D, texId[6]);
   glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
   glColor3f(1, 1, 1);
   glBegin(GL_QUADS);
@@ -799,7 +803,7 @@ void skybox(){
 
 
   ////////////////////// REAR WALL ////////////////////////
-  glBindTexture(GL_TEXTURE_2D, texId[8]);
+  glBindTexture(GL_TEXTURE_2D, texId[7]);
   glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
   glColor3f(1, 1, 1);
   glBegin(GL_QUADS);
@@ -810,7 +814,7 @@ void skybox(){
   glEnd();
 
   /////////////////////// TOP //////////////////////////
-  glBindTexture(GL_TEXTURE_2D, texId[9]);
+  glBindTexture(GL_TEXTURE_2D, texId[8]);
   glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
   glColor3f(1, 1, 1);
   glBegin(GL_QUADS);
@@ -846,29 +850,7 @@ glDisable(GL_TEXTURE_2D);
 
 }
 
-void drawFloor()
-{
-	bool flag = false;
-
-	glBegin(GL_QUADS);
-	glNormal3f(0, 1, 0);
-	for(int x = -400; x <= 400; x += 20)
-	{
-		for(int z = -400; z <= 400; z += 20)
-		{
-			if(flag) glColor3f(0.6, 1.0, 0.8);
-			else glColor3f(0.8, 1.0, 0.6);
-			glVertex3f(x, 0, z);
-			glVertex3f(x, 0, z+20);
-			glVertex3f(x+20, 0, z+20);
-			glVertex3f(x+20, 0, z);
-			flag = !flag;
-		}
-	}
-	glEnd();
-}
-
-//---------------------------------------------------------------------
+// initialising the scene
 void initialise(void)
 {
 	float black[4] = {0.0, 0.0, 0.0, 1.0};
@@ -929,7 +911,7 @@ void initialise(void)
     gluPerspective(80.0, 1.0, 5000.0, 700000.0);   //Perspective projection
 }
 
-//---------------------------------------------------------------------
+// Displaying the scene
 void display(void)
 {
 	float xlook, zlook, ylook; //TODO look up and down too
@@ -949,7 +931,7 @@ void display(void)
 	glLightfv(GL_LIGHT0, GL_POSITION, lgt_pos0);   //light position
 	if (changeCamera) {
 		// TODO Sort this shit out  // ask why this is a 350 minimum
-		gluLookAt(120000, 305 * (shipHeight - 50), -160000,  120000, 0, -160000,   0, 0, 1);
+		gluLookAt(80000, 305 * (shipHeight - 50), -160000,  80000, 0, -160000,   0, 0, 1);
 	} else {
 		gluLookAt(eye_x, size/8, eye_z,  look_x, size/8, look_z,   0, 1, 0);
 	}
@@ -957,13 +939,13 @@ void display(void)
 	glRotatef(180, 0, 1, 0);
 
 	glPushMatrix();
-		glTranslatef(-120000, 1000, 160000);
+		glTranslatef(-90000, 1000, 160000);
 		glScalef(1500, 1500, 1500);
     	drawCastle();
 	glPopMatrix();
 
 	glPushMatrix();
-		glTranslatef(-120000, 0, 160000);
+		glTranslatef(-80000, 0, 160000);
 		glScalef(300, 300, 300);
 		drawUfo();
 	glPopMatrix();
@@ -993,7 +975,7 @@ void display(void)
 
 }
 
-
+// Setting the states of the robots
 void setRobotState()
 {
 	if (robotState == 0 && robot_pos[2] <= -126000) {
@@ -1025,7 +1007,7 @@ void setRobotState()
 	}
 }
 
-
+// Timer function to handle animation within the scene
 void timmerFunc(int val) {
 	if (shipLaunched) {
 		shipHeight += 5;
@@ -1129,19 +1111,18 @@ void timmerFunc(int val) {
     glutPostRedisplay();
 }
 
-
+//hanlding keys presses
 void keys(unsigned char key_t, int x, int y)
 {
 	if (key_t == 115) {
 		shipLaunched = true;
 	}
 	if (key_t == 99) {
-		printf("%s\n", "noot");
 		fireCannon = true;
 	}
 }
 
-//--------------------------------------------------------------
+// Handling special key presses
  void special(int key, int x, int y)
  {
 	 float start_x = eye_x;
@@ -1176,8 +1157,8 @@ void keys(unsigned char key_t, int x, int y)
  	look_z = eye_z - 100*cos(angle);
  	glutPostRedisplay();
 }
-//-------------------------------------------------------------------
 
+// Starting the scene
 int main(int argc, char** argv)
 {
    glutInit(&argc, argv);
