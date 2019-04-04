@@ -54,45 +54,45 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1 (copy)"
+CMAKE_SOURCE_DIR = "/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1 (copy)"
+CMAKE_BINARY_DIR = "/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1"
 
 #=============================================================================
-# Target rules for target CMakeFiles/Skybox.out.dir
+# Target rules for target CMakeFiles/assignment1.out.dir
 
 # All Build rule for target.
-CMakeFiles/Skybox.out.dir/all:
-	$(MAKE) -f CMakeFiles/Skybox.out.dir/build.make CMakeFiles/Skybox.out.dir/depend
-	$(MAKE) -f CMakeFiles/Skybox.out.dir/build.make CMakeFiles/Skybox.out.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1 (copy)/CMakeFiles" --progress-num=1,2 "Built target Skybox.out"
-.PHONY : CMakeFiles/Skybox.out.dir/all
+CMakeFiles/assignment1.out.dir/all:
+	$(MAKE) -f CMakeFiles/assignment1.out.dir/build.make CMakeFiles/assignment1.out.dir/depend
+	$(MAKE) -f CMakeFiles/assignment1.out.dir/build.make CMakeFiles/assignment1.out.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1/CMakeFiles" --progress-num=1,2 "Built target assignment1.out"
+.PHONY : CMakeFiles/assignment1.out.dir/all
 
 # Include target in all.
-all: CMakeFiles/Skybox.out.dir/all
+all: CMakeFiles/assignment1.out.dir/all
 
 .PHONY : all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/Skybox.out.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1 (copy)/CMakeFiles" 2
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/Skybox.out.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start "/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1 (copy)/CMakeFiles" 0
-.PHONY : CMakeFiles/Skybox.out.dir/rule
+CMakeFiles/assignment1.out.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start "/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1/CMakeFiles" 2
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/assignment1.out.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start "/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1/CMakeFiles" 0
+.PHONY : CMakeFiles/assignment1.out.dir/rule
 
 # Convenience name for target.
-Skybox.out: CMakeFiles/Skybox.out.dir/rule
+assignment1.out: CMakeFiles/assignment1.out.dir/rule
 
-.PHONY : Skybox.out
-
-# clean rule for target.
-CMakeFiles/Skybox.out.dir/clean:
-	$(MAKE) -f CMakeFiles/Skybox.out.dir/build.make CMakeFiles/Skybox.out.dir/clean
-.PHONY : CMakeFiles/Skybox.out.dir/clean
+.PHONY : assignment1.out
 
 # clean rule for target.
-clean: CMakeFiles/Skybox.out.dir/clean
+CMakeFiles/assignment1.out.dir/clean:
+	$(MAKE) -f CMakeFiles/assignment1.out.dir/build.make CMakeFiles/assignment1.out.dir/clean
+.PHONY : CMakeFiles/assignment1.out.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/assignment1.out.dir/clean
 
 .PHONY : clean
 

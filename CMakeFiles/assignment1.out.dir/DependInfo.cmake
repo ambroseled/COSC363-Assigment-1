@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1 (copy)/Skybox.cpp" "/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1 (copy)/CMakeFiles/Skybox.out.dir/Skybox.cpp.o"
+  "/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1/assignment1.cpp" "/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1/CMakeFiles/assignment1.out.dir/assignment1.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

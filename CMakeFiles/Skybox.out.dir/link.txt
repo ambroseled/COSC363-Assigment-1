@@ -1,1 +1,0 @@
-/usr/bin/c++    -rdynamic CMakeFiles/Skybox.out.dir/Skybox.cpp.o  -o Skybox.out -lGL -lGLU -lglut -lXmu -lXi 

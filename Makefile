@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1 (copy)"
+CMAKE_SOURCE_DIR = "/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1 (copy)"
+CMAKE_BINARY_DIR = "/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1"
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1 (copy)/CMakeFiles" "/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1 (copy)/CMakeFiles/progress.marks"
+	$(CMAKE_COMMAND) -E cmake_progress_start "/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1/CMakeFiles" "/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1/CMakeFiles/progress.marks"
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start "/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1 (copy)/CMakeFiles" 0
+	$(CMAKE_COMMAND) -E cmake_progress_start "/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1/CMakeFiles" 0
 .PHONY : all
 
 # The main clean target
@@ -111,44 +111,44 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named Skybox.out
+# Target rules for targets named assignment1.out
 
 # Build rule for target.
-Skybox.out: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 Skybox.out
-.PHONY : Skybox.out
+assignment1.out: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 assignment1.out
+.PHONY : assignment1.out
 
 # fast build rule for target.
-Skybox.out/fast:
-	$(MAKE) -f CMakeFiles/Skybox.out.dir/build.make CMakeFiles/Skybox.out.dir/build
-.PHONY : Skybox.out/fast
+assignment1.out/fast:
+	$(MAKE) -f CMakeFiles/assignment1.out.dir/build.make CMakeFiles/assignment1.out.dir/build
+.PHONY : assignment1.out/fast
 
-Skybox.o: Skybox.cpp.o
+assignment1.o: assignment1.cpp.o
 
-.PHONY : Skybox.o
+.PHONY : assignment1.o
 
 # target to build an object file
-Skybox.cpp.o:
-	$(MAKE) -f CMakeFiles/Skybox.out.dir/build.make CMakeFiles/Skybox.out.dir/Skybox.cpp.o
-.PHONY : Skybox.cpp.o
+assignment1.cpp.o:
+	$(MAKE) -f CMakeFiles/assignment1.out.dir/build.make CMakeFiles/assignment1.out.dir/assignment1.cpp.o
+.PHONY : assignment1.cpp.o
 
-Skybox.i: Skybox.cpp.i
+assignment1.i: assignment1.cpp.i
 
-.PHONY : Skybox.i
+.PHONY : assignment1.i
 
 # target to preprocess a source file
-Skybox.cpp.i:
-	$(MAKE) -f CMakeFiles/Skybox.out.dir/build.make CMakeFiles/Skybox.out.dir/Skybox.cpp.i
-.PHONY : Skybox.cpp.i
+assignment1.cpp.i:
+	$(MAKE) -f CMakeFiles/assignment1.out.dir/build.make CMakeFiles/assignment1.out.dir/assignment1.cpp.i
+.PHONY : assignment1.cpp.i
 
-Skybox.s: Skybox.cpp.s
+assignment1.s: assignment1.cpp.s
 
-.PHONY : Skybox.s
+.PHONY : assignment1.s
 
 # target to generate assembly for a file
-Skybox.cpp.s:
-	$(MAKE) -f CMakeFiles/Skybox.out.dir/build.make CMakeFiles/Skybox.out.dir/Skybox.cpp.s
-.PHONY : Skybox.cpp.s
+assignment1.cpp.s:
+	$(MAKE) -f CMakeFiles/assignment1.out.dir/build.make CMakeFiles/assignment1.out.dir/assignment1.cpp.s
+.PHONY : assignment1.cpp.s
 
 # Help Target
 help:
@@ -157,11 +157,11 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... Skybox.out"
+	@echo "... assignment1.out"
 	@echo "... edit_cache"
-	@echo "... Skybox.o"
-	@echo "... Skybox.i"
-	@echo "... Skybox.s"
+	@echo "... assignment1.o"
+	@echo "... assignment1.i"
+	@echo "... assignment1.s"
 .PHONY : help
 
 
