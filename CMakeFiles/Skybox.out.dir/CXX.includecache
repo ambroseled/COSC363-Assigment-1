@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1/Skybox.cpp
+/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1 (copy)/Skybox.cpp
 iostream
 -
 GL/freeglut.h
@@ -20,11 +20,11 @@ climits
 math.h
 -
 loadTGA.h
-/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1/loadTGA.h
+/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1 (copy)/loadTGA.h
 loadBMP.h
-/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1/loadBMP.h
+/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1 (copy)/loadBMP.h
 
-/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1/loadBMP.h
+/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1 (copy)/loadBMP.h
 iostream
 -
 fstream
@@ -32,7 +32,7 @@ fstream
 GL/freeglut.h
 -
 
-/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1/loadTGA.h
+/home/cosc/student/ajl190/Desktop/@nd pro/COSC363/COSC363-Assigment-1 (copy)/loadTGA.h
 iostream
 -
 fstream
